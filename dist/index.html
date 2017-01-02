@@ -1,0 +1,105 @@
+<html>
+<head>
+  <title>Custom Controls Plugin</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="stylesheet" type="text/css" href="css/styles.css" />
+  <script type="text/javascript" src="js/jquery.min.js"></script>
+  <script type="text/javascript" src="js/scripts.js"></script>
+</head>
+<body>
+
+  <div class="shader-fields"></div>
+
+  <script type="text/javascript">/*<![CDATA[*/
+    jQuery(document).ready(function(){
+      var fieldCategory={
+        key:'category', label:'Category', type:'datalist',
+        is_valid:function(wrap, valEl){ return true; },
+        on_change:function(wrap, valEl){},
+        on_set:function(wrap, valEl){  },
+        option_groups:{
+          default:[
+            {attribute:'attribute'},
+            {uniform:'uniform'},
+            {varying:'varying'}
+          ]
+        }
+      };
+      var fieldDimension={
+        key:'dimension', label:'Dimension', type:'datalist',
+        is_valid:function(wrap, valEl){ return true; },
+        on_change:function(wrap, valEl){},
+        on_set:function(wrap, valEl){},
+        set_option_group_from:'category',
+        option_groups:{
+          attribute:[
+            {float:'float'},
+            {vec2:'vec2'},
+            {vec3:'vec3'},
+            {vec4:'vec4'},
+            {mat2:'mat2'},
+            {mat3:'mat3'},
+            {mat4:'mat4'},
+          ],
+          uniform:[
+            {float:'float'},
+            {vec2:'vec2'},
+            {vec3:'vec3'},
+            {vec4:'vec4'},
+            {mat2:'mat2'},
+            {mat3:'mat3'},
+            {mat4:'mat4'},
+            {int:'int'},
+            {ivec2:'ivec2'},
+            {ivec3:'ivec3'},
+            {ivec4:'ivec4'},
+            {sampler2D:'sampler2D'},
+            {samplerCube:'samplerCube'}
+          ],
+          varying:[
+            {float:'float'},
+            {vec2:'vec2'},
+            {vec3:'vec3'},
+            {vec4:'vec4'},
+            {mat2:'mat2'},
+            {mat3:'mat3'},
+            {mat4:'mat4'},
+            {int:'int'},
+            {ivec2:'ivec2'},
+            {ivec3:'ivec3'},
+            {ivec4:'ivec4'},
+            {sampler2D:'sampler2D'},
+            {samplerCube:'samplerCube'}
+          ]
+        }
+      };
+      var fieldName={
+        key:'name', label:'Name', type:'input',
+        is_valid:function(wrap, valEl){ return true; },
+        on_change:function(wrap, valEl){ },
+        on_set:function(wrap, valEl){  }
+      };
+
+      customControls.init([
+        {
+          key:'vertShaderField', selector:'.shader-fields:first', label:'Vertex Shader Fields',
+          min_child_groups:0, max_child_groups:-1,
+          children:[
+            fieldCategory,fieldDimension,fieldName
+          ]
+        },
+        {
+          key:'fragShaderField', selector:'.shader-fields:first', label:'Fragment Shader Fields',
+          min_child_groups:0, max_child_groups:-1,
+          children:[
+            fieldCategory,fieldDimension,fieldName
+          ]
+        }
+      ]);
+    });
+  /*]]>*/</script>
+
+</body>
+</html>
