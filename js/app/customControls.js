@@ -12,6 +12,7 @@ var customControls=(function(){
     is_valid:function(wrap, valEl){ return true; }, //logic for control validation event
     on_change:function(wrap, valEl){}, //logic for control value change event
     on_set:function(wrap, valEl){}, //logic for control value set event
+    columns:undefined, //how many columns should the child controls be divided into
     children:[] //child controls under this parent control (recursive)
   };
 
@@ -276,7 +277,11 @@ var customControls=(function(){
         }
         var count=jQuery(this).children('.custom-control-wrap').length;
         wrap[0]['custom_ctl_args']['child_control_count']=count;
-        jQuery(this).addClass('c'+count);
+        var setCount=count;
+        if(wrap[0]['custom_ctl_args'].hasOwnProperty('columns') && wrap[0]['custom_ctl_args']['columns']>0){
+          setCount=wrap[0]['custom_ctl_args']['columns'];
+        }
+        jQuery(this).addClass('c'+setCount);
       });
       if(args['max_child_groups'] < args['min_child_groups'] || childGroups.length < args['max_child_groups']){
         wrap.removeClass('max-children');
@@ -324,7 +329,7 @@ var customControls=(function(){
         setFromWrap[0]['custom_ctl_args']['on_set'](setFromWrap, setFromWrap.find('.ctl .val:first'));
       }
     },
-    initControl:function(ctlJson, parentKey){
+    initControl:function(ctlJson, parentKey, wrap){
       var self=this;
       if(ctlJson!=undefined){
         var args={};
@@ -343,11 +348,12 @@ var customControls=(function(){
         }
         if(args.hasOwnProperty('key')){
           if(args.hasOwnProperty('selector') || parentKey!=undefined){
-            var wrap;
-            if(args.hasOwnProperty('selector')){
-              wrap=jQuery(args['selector']);
-            }else{
-              wrap=jQuery('[data-key='+parentKey+']:first');
+            if(wrap==undefined){
+              if(args.hasOwnProperty('selector')){
+                wrap=jQuery(args['selector']);
+              }else{
+                wrap=jQuery('[data-key='+parentKey+']:first');
+              }
             }
             if(wrap.length>0){
               //if this is a sub child group
@@ -355,7 +361,7 @@ var customControls=(function(){
                 if(wrap.children('.children:last').length<1){
                   wrap.append('<div class="children"><div data-group="0" class="child-group"></div></div>');
                 }
-                wrap=wrap.children('.children:last').children('.child-group:first');
+                wrap=wrap.children('.children:last').children('.child-group:last');
               }
 
               wrap.append(self['getCtlHtml'](wrap,args));
@@ -370,33 +376,27 @@ var customControls=(function(){
               //if can add more child groups on the fly
               if(args['min_child_groups']!==args['max_child_groups']){
                 var ccw=wrap.children('.custom-control-wrap:last');
-                ccw.append('<div class="btn-add-child-group"><span>+ Add</span></div>');
+                ccw.append('<div class="btn-add-child-group"><span>+ Add <span>'+args['label']+'</span></span></div>');
                 var addBtn=ccw.children('.btn-add-child-group:last');
+                ccw.addClass('can-have-children');
                 addBtn.click(function(){
-                  var childWrap=jQuery(this).parent().children('.children:last');
+                  var w=jQuery(this).parents('.custom-control-wrap:first');
+                  var childArgs=w[0]['custom_ctl_args']['children'];
+                  var childWrap=w.children('.children:last');
                   if(childWrap.length<1){
                     jQuery(this).before('<div class="children"></div>');
-                    childWrap=jQuery(this).parent().children('.children:last');
+                    childWrap=w.children('.children:last');
                   }
-                  if(!childWrap.parents('.custom-control-wrap:first').hasClass('max-children')){
-                    var newGroupIndex=childWrap.children('.child-group').length;
-                    while(childWrap.children('.child-group[data-group="'+newGroupIndex+'"]:first').length>0){
-                      newGroupIndex++;
-                    }
-                    childWrap.append('<div data-group="'+newGroupIndex+'" class="child-group"></div>');
-                    var groupWrap=childWrap.children('.child-group:last');
-                    var childArgs=childWrap.parents('.custom-control-wrap:first')[0]['custom_ctl_args'];
-                    for(var a=0;a<childArgs['children'].length;a++){
-                      groupWrap.append(self['getCtlHtml'](groupWrap,childArgs['children'][a]));
-                      self['setCtlEvents'](groupWrap.children('.custom-control-wrap:last'),childArgs['children'][a]);
-                    }
-                    self['updateChildGroupCount'](childWrap);
+                  var newGroupIndex=childWrap.children('.child-group').length;
+                  while(childWrap.children('.child-group[data-group="'+newGroupIndex+'"]:first').length>0){
+                    newGroupIndex++;
                   }
+                  childWrap.append('<div data-group="'+newGroupIndex+'" class="child-group"></div>');
+                  for(var c=0;c<childArgs.length;c++){
+                    self['initControl'](childArgs[c], w.attr('data-key'), w);
+                  }
+                  self['updateChildGroupCount'](w.children('.children:last'));
                 });
-
-
-
-
               }
             }
           }

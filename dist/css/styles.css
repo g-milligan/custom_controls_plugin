@@ -157,13 +157,13 @@ Usage:
     at a window width of $bp-xlarge
 
 */
-/* line 20, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+/* line 21, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 body {
   color: #a5adb7;
   background-color: #2d323b;
 }
 
-/* line 22, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+/* line 23, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap {
   font-family: Arial;
   color: #a5adb7;
@@ -172,12 +172,12 @@ body {
   padding: 10px;
 }
 
-/* line 26, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+/* line 27, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap .custom-control-wrap {
   padding: 0;
 }
 
-/* line 30, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+/* line 31, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap input, .custom-control-wrap select {
   height: 27px;
   background-color: #a5adb7;
@@ -185,7 +185,7 @@ body {
   padding: 5px;
 }
 
-/* line 34, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+/* line 35, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap label {
   font-size: 25px;
   padding: 5px;
@@ -193,7 +193,7 @@ body {
   display: block;
 }
 
-/* line 37, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+/* line 38, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap label .child-count {
   color: #717882;
   font-size: 65%;
@@ -202,38 +202,38 @@ body {
   padding-left: 5px;
 }
 
-/* line 41, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+/* line 42, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap label .child-count:before, .custom-control-wrap label .child-count:after {
   color: #717882;
 }
 
-/* line 44, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+/* line 45, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap label .child-count:before {
   content: " (";
 }
 
-/* line 47, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+/* line 48, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap label .child-count:after {
   content: ")";
 }
 
-/* line 53, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+/* line 54, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap .ctl {
   width: 100%;
 }
 
-/* line 56, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+/* line 57, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap .ctl .val {
   width: 100%;
   font-size: 14px;
 }
 
-/* line 59, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+/* line 60, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap .ctl .val[disabled] {
   background-color: #5c6167;
 }
 
-/* line 65, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+/* line 66, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap .btn-add-child-group {
   color: #c7cad0;
   display: inline-block;
@@ -253,17 +253,23 @@ body {
 }
 
 /* line 72, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+.custom-control-wrap .btn-add-child-group span span {
+  color: #717882;
+  font-style: italic;
+}
+
+/* line 79, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap.max-children .btn-add-child-group {
   text-decoration: line-through;
   color: #5c6167;
 }
 
-/* line 77, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+/* line 84, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap .children {
   display: block;
 }
 
-/* line 80, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+/* line 87, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap .children .child-group {
   display: inline-block;
   position: relative;
@@ -271,77 +277,77 @@ body {
   margin: 5px;
 }
 
-/* line 83, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+/* line 90, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap .children .child-group.has-remove {
   padding-right: 25px;
 }
 
-/* line 88, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+/* line 95, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap .children .child-group.c1 .custom-control-wrap {
   width: 100%;
 }
 
-/* line 91, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+/* line 98, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap .children .child-group.c2 .custom-control-wrap {
   width: 50%;
 }
 
-/* line 94, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+/* line 101, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap .children .child-group.c3 .custom-control-wrap {
   width: 33.3333%;
 }
 
-/* line 97, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+/* line 104, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap .children .child-group.c4 .custom-control-wrap {
   width: 25%;
 }
 
-/* line 100, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+/* line 107, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap .children .child-group.c5 .custom-control-wrap {
   width: 20%;
 }
 
-/* line 103, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+/* line 110, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap .children .child-group.c6 .custom-control-wrap {
   width: 16.6666%;
 }
 
-/* line 106, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+/* line 113, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap .children .child-group.c7 .custom-control-wrap {
   width: 14.2857%;
 }
 
-/* line 109, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+/* line 116, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap .children .child-group.c8 .custom-control-wrap {
   width: 12.5%;
 }
 
-/* line 112, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+/* line 119, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap .children .child-group.c9 .custom-control-wrap {
   width: 11.1111%;
 }
 
-/* line 115, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+/* line 122, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap .children .child-group.c10 .custom-control-wrap {
   width: 10%;
 }
 
-/* line 118, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+/* line 125, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap .children .child-group.c11 .custom-control-wrap {
   width: 9.0909%;
 }
 
-/* line 121, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+/* line 128, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap .children .child-group.c12 .custom-control-wrap {
   width: 8.3333%;
 }
 
-/* line 124, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+/* line 131, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap .children .child-group .custom-control-wrap {
   padding: 5px;
 }
 
-/* line 127, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+/* line 134, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap .children .child-group .custom-control-wrap label {
   font-size: 14px;
   color: #717882;
@@ -354,7 +360,13 @@ body {
   text-transform: lowercase;
 }
 
-/* line 136, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+/* line 142, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+.custom-control-wrap .children .child-group .custom-control-wrap.can-have-children > label {
+  font-size: 20px;
+  color: #a5adb7;
+}
+
+/* line 149, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap .children .child-group .btn-remove {
   position: absolute;
   right: 0;
@@ -372,7 +384,7 @@ body {
   user-select: none;
 }
 
-/* line 140, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+/* line 153, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap .children .child-group .btn-remove span {
   position: absolute;
   margin: auto;
@@ -384,7 +396,7 @@ body {
   height: 10px;
 }
 
-/* line 148, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+/* line 161, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap > label.init-expand {
   cursor: pointer;
   -moz-user-select: -moz-none;
@@ -396,29 +408,29 @@ body {
   user-select: none;
 }
 
-/* line 151, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+/* line 164, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap > label.init-expand:before {
   display: inline-block;
   width: 20px;
   color: #717882;
 }
 
-/* line 158, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+/* line 171, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap.hide-children > label {
   color: #717882;
 }
 
-/* line 161, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+/* line 174, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap.hide-children > label:before {
   content: " + ";
 }
 
-/* line 165, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+/* line 178, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap.hide-children > .children {
   display: none;
 }
 
-/* line 173, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+/* line 186, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap.show-children > label:before {
   content: " - ";
 }

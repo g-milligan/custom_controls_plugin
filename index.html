@@ -83,19 +83,28 @@
       };
 
       customControls.init([
-        {
-          key:'vertShaderField', selector:'.shader-fields:first', label:'Vertex Shader Fields',
-          min_child_groups:0, max_child_groups:-1,
-          children:[
-            fieldCategory,fieldDimension,fieldName
-          ]
-        },
-        {
-          key:'fragShaderField', selector:'.shader-fields:first', label:'Fragment Shader Fields',
-          min_child_groups:0, max_child_groups:-1,
-          children:[
-            fieldCategory,fieldDimension,fieldName
-          ]
+          {
+            selector:'.shader-fields:first', key:'program', label:'Program',
+            min_child_groups:1, max_child_groups:-1, columns:1,
+            children:[
+              {
+                key:'name', label:'Program Name', type:'input'
+              },
+              {
+                key:'vertField', label:'Vertex Field',
+                min_child_groups:0, max_child_groups:-1,
+                children:[
+                  fieldCategory,fieldDimension,fieldName
+                ]
+              },
+              {
+                key:'fragField', label:'Fragment Field',
+                min_child_groups:0, max_child_groups:-1,
+                children:[
+                  fieldCategory,fieldDimension,fieldName
+                ]
+              }
+            ]
         }
       ]);
     });

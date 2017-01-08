@@ -9,6 +9,7 @@ $pad-input:5px;
 $h-input:27px;
 
 $fs-large:25px;
+$fs-bigger:20px;
 $fs-big:18px;
 $fs-med:16px;
 $fs:14px;
@@ -66,6 +67,12 @@ body{color:$c-text;background-color:$c-background;}
     color:$c-text-light;display:inline-block;width:200px;text-align:left;
     text-transform:uppercase;cursor:pointer;padding:$pad-input;
     margin:$pad-input;@include noselect();
+
+    span{
+      span{
+        color:$c-text-fade;font-style:italic;
+      }
+    }
   }
 
   &.max-children{
@@ -129,6 +136,12 @@ body{color:$c-text;background-color:$c-background;}
           padding-top:0;padding-left:0;padding-right:0;
           margin-top:0;margin-left:0;margin-right:0;
           text-transform:lowercase;
+        }
+
+        &.can-have-children{
+          > label{
+            font-size:$fs-bigger;color:$c-text;
+          }
         }
 
       }
