@@ -370,8 +370,7 @@ body {
 .custom-control-wrap .children .child-group .btn-remove {
   position: absolute;
   right: 0;
-  top: 0;
-  bottom: 0;
+  top: 46px;
   margin: auto;
   width: 25px;
   cursor: pointer;

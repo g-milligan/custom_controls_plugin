@@ -147,7 +147,7 @@ body{color:$c-text;background-color:$c-background;}
       }
 
       .btn-remove{
-        position:absolute;right:0;top:0;bottom:0;margin:auto;
+        position:absolute;right:0;top:($h-input + $pad-input + $fs);margin:auto;
         width:($pad-input * 5);cursor:pointer;@include noselect();
 
         span{position:absolute;margin:auto;top:0;bottom:0;right:0;left:0;width:($pad-input * 2);height:($pad-input * 2);}
