@@ -404,7 +404,7 @@ var customControls=(function(){
       }
     },
     init:function(ctlArray){
-      var self=this;
+      var ret={}, self=this;
       if(ctlArray!=undefined && ctlArray.length>0){
         for(var c=0;c<ctlArray.length;c++){
           self['initControl'](ctlArray[c]);
@@ -412,7 +412,28 @@ var customControls=(function(){
         jQuery('.custom-control-wrap .children').each(function(){
           self['updateChildGroupCount'](jQuery(this));
         });
+        //all top level controls
+        var topLevelControls=jQuery('.custom-control-wrap').not('.custom-control-wrap .custom-control-wrap');
+        jQuery('.custom-control-wrap').each(function(){
+
+
+
+
+          
+          //*** add get_values function
+
+
+
+
+
+
+        });
+        ret['top_wraps']=topLevelControls;
+        ret['get_values']=function(w){
+          return w[0]['custom_ctl_args']['get_values'](w);
+        }
       }
+      return ret;
     }
   };
 }());
