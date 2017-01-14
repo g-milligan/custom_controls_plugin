@@ -106,7 +106,15 @@
               }
             ]
         }
-      ]);
+      ], {
+        submit:{
+          label:'Process',
+          submit_on_set:true,
+          on_submit:function(vals){
+
+          }
+        }
+      });
 
       var test = cc.get_values(cc['top_wraps'].eq(0));
 
