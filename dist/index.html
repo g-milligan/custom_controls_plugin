@@ -83,7 +83,7 @@
       };
 
       var cc = customControls.init([
-          {
+        {
             selector:'.shader-fields:first', key:'program', label:'Program',
             min_child_groups:1, max_child_groups:-1, columns:1,
             children:[
@@ -105,13 +105,16 @@
                 ]
               }
             ]
+        },
+        {
+          selector:'.shader-fields:first', key:'test', label:'Test', type:'input'
         }
       ], {
         submit:{
           label:'Process',
           submit_on_set:true,
           on_submit:function(vals){
-
+            var test='';
           }
         }
       });

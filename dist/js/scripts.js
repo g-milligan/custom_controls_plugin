@@ -339,6 +339,53 @@ var customControls=(function(){
         setFromWrap[0]['custom_ctl_args']['on_set'](setFromWrap, setFromWrap.find('.ctl .val:first'));
       }
     },
+    initGetValues:function(moreArgs){
+      //set more args
+      if(moreArgs==undefined){
+        moreArgs=jQuery('.custom-control-wrap:first')[0]['custom_ctl_args']['more_args'];
+      }
+      //attach get_values method to wraps
+      jQuery('.custom-control-wrap').each(function(){
+        if(!jQuery(this)[0]['custom_ctl_args']['get_values']){
+          if(!jQuery(this)[0]['custom_ctl_args'].hasOwnProperty('more_args')){
+            jQuery(this)[0]['custom_ctl_args']['more_args']=moreArgs;
+          }
+          //create get_values
+          jQuery(this)[0]['custom_ctl_args']['get_values']=function(w, ret){
+            var dk=w.attr('data-key');
+            if(ret==undefined){ ret={} }
+            ret[dk]={};
+            if(w[0]['custom_ctl_args'].hasOwnProperty('get_value')){
+              ret[dk]['val']=w[0]['custom_ctl_args']['get_value'](w);
+            }
+            w.children('.children').children('.child-group').each(function(){
+              var groupJson={};
+              jQuery(this).children('.custom-control-wrap').each(function(c){
+                if(!ret[dk].hasOwnProperty('children')){
+                  ret[dk]['children']=[];
+                }
+                groupJson=jQuery(this)[0]['custom_ctl_args']['get_values'](jQuery(this), groupJson);
+              });
+              if(ret[dk].hasOwnProperty('children')){
+                ret[dk]['children'].push(groupJson);
+              }
+            });
+            return ret;
+          };
+          //create submit on set
+          if(moreArgs['submit']['submit_on_set']){
+            var originalOnSet=jQuery(this)[0]['custom_ctl_args']['on_set'];
+            jQuery(this)[0]['custom_ctl_args']['on_set']=function(wr, valEl){
+              originalOnSet(wr, valEl);
+              var topWr=wr.parents('.custom-control-wrap:last');
+              if(topWr.length<1){ topWr=wr; }
+              var vs=topWr[0]['custom_ctl_args']['get_values'](topWr);
+              moreArgs['submit']['on_submit'](vs);
+            };
+          }
+        }
+      });
+    },
     initControl:function(ctlJson, parentKey, wrap){
       var self=this;
       if(ctlJson!=undefined){
@@ -406,6 +453,7 @@ var customControls=(function(){
                     self['initControl'](childArgs[c], w.attr('data-key'), w);
                   }
                   self['updateChildGroupCount'](w.children('.children:last'));
+                  self['initGetValues']();
                 });
               }
             }
@@ -450,22 +498,7 @@ var customControls=(function(){
         //all top level controls
         var topLevelControls=jQuery('.custom-control-wrap').not('.custom-control-wrap .custom-control-wrap');
         ret['top_wraps']=topLevelControls;
-        //attach get_values method to wraps
-        jQuery('.custom-control-wrap').each(function(){
-          if(!jQuery(this)[0]['custom_ctl_args']['get_values']){
-            jQuery(this)[0]['custom_ctl_args']['get_values']=function(w){
-              var ret={};
-              if(w[0]['custom_ctl_args'].hasOwnProperty('get_value')){
-                ret['_val']=w[0]['custom_ctl_args']['get_value'](w);
-              }
-              w.children('.children').children('.child-group').children('.custom-control-wrap').each(function(c){
-                var dk=jQuery(this).attr('data-key');
-                ret[dk]=jQuery(this)[0]['custom_ctl_args']['get_values'](jQuery(this));
-              });
-              return ret;
-            };
-          }
-        });
+        self['initGetValues'](moreArgs);
         ret['get_values']=function(w){
           return w[0]['custom_ctl_args']['get_values'](w);
         }
