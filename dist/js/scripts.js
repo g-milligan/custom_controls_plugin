@@ -352,24 +352,35 @@ var customControls=(function(){
           }
           //create get_values
           jQuery(this)[0]['custom_ctl_args']['get_values']=function(w, ret){
-            var dk=w.attr('data-key');
             if(ret==undefined){ ret={} }
-            ret[dk]={};
-            if(w[0]['custom_ctl_args'].hasOwnProperty('get_value')){
-              ret[dk]['val']=w[0]['custom_ctl_args']['get_value'](w);
-            }
-            w.children('.children').children('.child-group').each(function(){
-              var groupJson={};
-              jQuery(this).children('.custom-control-wrap').each(function(c){
-                if(!ret[dk].hasOwnProperty('children')){
-                  ret[dk]['children']=[];
-                }
-                groupJson=jQuery(this)[0]['custom_ctl_args']['get_values'](jQuery(this), groupJson);
-              });
-              if(ret[dk].hasOwnProperty('children')){
-                ret[dk]['children'].push(groupJson);
+            var wSibs=w.parent().children('.custom-control-wrap');
+            var recursiveWrap=function(w){
+              var dk=w.attr('data-key');
+              ret[dk]={};
+              if(w[0]['custom_ctl_args'].hasOwnProperty('get_value')){
+                ret[dk]['val']=w[0]['custom_ctl_args']['get_value'](w);
               }
-            });
+              w.children('.children').children('.child-group').each(function(){
+                var groupJson={};
+                jQuery(this).children('.custom-control-wrap').each(function(c){
+                  if(!ret[dk].hasOwnProperty('children')){
+                    ret[dk]['children']=[];
+                  }
+                  groupJson=jQuery(this)[0]['custom_ctl_args']['get_values'](jQuery(this), groupJson);
+                });
+                if(ret[dk].hasOwnProperty('children')){
+                  ret[dk]['children'].push(groupJson);
+                }
+              });
+              return ret;
+            };
+            if(wSibs.length>0){
+              wSibs.each(function(){
+                recursiveWrap(jQuery(this));
+              });
+            }else{
+              recursiveWrap(w);
+            }
             return ret;
           };
           //create submit on set
