@@ -17,7 +17,8 @@ var jsFiles={
     './js/vendor/jquery.min.js'
   ],
   './dist/js/scripts.js':[
-    './js/app/plugins/customControls.js'
+    './js/app/plugins/customControls.js',
+    './js/app/plugins/codeGen.js'
   ]
 };
 

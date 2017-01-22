@@ -64,7 +64,7 @@ body{color:$c-text;background-color:$c-background;}
   }
 
   .btn-add-child-group{
-    color:$c-text-light;display:inline-block;width:200px;text-align:left;
+    color:$c-highlight;display:inline-block;width:200px;text-align:left;
     text-transform:uppercase;cursor:pointer;padding:$pad-input;
     margin:$pad-input;@include noselect();
 
@@ -151,6 +151,10 @@ body{color:$c-text;background-color:$c-background;}
         width:($pad-input * 5);cursor:pointer;@include noselect();
 
         span{position:absolute;margin:auto;top:0;bottom:0;right:0;left:0;width:($pad-input * 2);height:($pad-input * 2);}
+
+        &:hover{
+          color:$c-highlight;
+        }
       }
     }
   }

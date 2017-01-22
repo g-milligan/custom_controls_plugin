@@ -12,6 +12,8 @@
 
   <div class="shader-fields"></div>
 
+  <div class="code-gen"></div>
+
   <script type="text/javascript">/*<![CDATA[*/
     jQuery(document).ready(function(){
       var fieldCategory={
@@ -21,9 +23,7 @@
         on_set:function(wrap, valEl){  },
         option_groups:{
           default:[
-            {attribute:'attribute'},
-            {uniform:'uniform'},
-            {varying:'varying'}
+            {attribute:'attribute'}, {uniform:'uniform'}, {varying:'varying'}
           ]
         }
       };
@@ -36,42 +36,24 @@
         option_groups:{
           attribute:[
             {float:'float'},
-            {vec2:'vec2'},
-            {vec3:'vec3'},
-            {vec4:'vec4'},
-            {mat2:'mat2'},
-            {mat3:'mat3'},
-            {mat4:'mat4'},
+            {vec2:'vec2'}, {vec3:'vec3'}, {vec4:'vec4'},
+            {mat2:'mat2'}, {mat3:'mat3'}, {mat4:'mat4'},
           ],
           uniform:[
             {float:'float'},
-            {vec2:'vec2'},
-            {vec3:'vec3'},
-            {vec4:'vec4'},
-            {mat2:'mat2'},
-            {mat3:'mat3'},
-            {mat4:'mat4'},
+            {vec2:'vec2'}, {vec3:'vec3'}, {vec4:'vec4'},
+            {mat2:'mat2'}, {mat3:'mat3'}, {mat4:'mat4'},
             {int:'int'},
-            {ivec2:'ivec2'},
-            {ivec3:'ivec3'},
-            {ivec4:'ivec4'},
-            {sampler2D:'sampler2D'},
-            {samplerCube:'samplerCube'}
+            {ivec2:'ivec2'}, {ivec3:'ivec3'}, {ivec4:'ivec4'},
+            {sampler2D:'sampler2D'}, {samplerCube:'samplerCube'}
           ],
           varying:[
             {float:'float'},
-            {vec2:'vec2'},
-            {vec3:'vec3'},
-            {vec4:'vec4'},
-            {mat2:'mat2'},
-            {mat3:'mat3'},
-            {mat4:'mat4'},
+            {vec2:'vec2'}, {vec3:'vec3'}, {vec4:'vec4'},
+            {mat2:'mat2'}, {mat3:'mat3'}, {mat4:'mat4'},
             {int:'int'},
-            {ivec2:'ivec2'},
-            {ivec3:'ivec3'},
-            {ivec4:'ivec4'},
-            {sampler2D:'sampler2D'},
-            {samplerCube:'samplerCube'}
+            {ivec2:'ivec2'}, {ivec3:'ivec3'}, {ivec4:'ivec4'},
+            {sampler2D:'sampler2D'}, {samplerCube:'samplerCube'}
           ]
         }
       };
@@ -81,6 +63,11 @@
         on_change:function(wrap, valEl){ },
         on_set:function(wrap, valEl){  }
       };
+
+      var cg = codeGen.init({
+        selector:'.code-gen:first'
+
+      });
 
       var cc = customControls.init([
         {
@@ -116,7 +103,7 @@
         }
       });
 
-      var test = cc.get_values(cc['top_wraps'].eq(0));
+      //var test = cc.get_values(cc['top_wraps'].eq(0));
 
     });
   /*]]>*/</script>

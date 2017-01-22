@@ -235,7 +235,7 @@ body {
 
 /* line 66, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap .btn-add-child-group {
-  color: #c7cad0;
+  color: #7eabfc;
   display: inline-block;
   width: 200px;
   text-align: left;
@@ -395,7 +395,12 @@ body {
   height: 10px;
 }
 
-/* line 161, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+/* line 155, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+.custom-control-wrap .children .child-group .btn-remove:hover {
+  color: #7eabfc;
+}
+
+/* line 165, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap > label.init-expand {
   cursor: pointer;
   -moz-user-select: -moz-none;
@@ -407,29 +412,29 @@ body {
   user-select: none;
 }
 
-/* line 164, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+/* line 168, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap > label.init-expand:before {
   display: inline-block;
   width: 20px;
   color: #717882;
 }
 
-/* line 171, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+/* line 175, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap.hide-children > label {
   color: #717882;
 }
 
-/* line 174, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+/* line 178, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap.hide-children > label:before {
   content: " + ";
 }
 
-/* line 178, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+/* line 182, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap.hide-children > .children {
   display: none;
 }
 
-/* line 186, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
+/* line 190, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap.show-children > label:before {
   content: " - ";
 }
