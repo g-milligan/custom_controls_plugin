@@ -17,6 +17,14 @@ var jsFiles={
     './js/vendor/jquery.min.js'
   ],
   './dist/js/scripts.js':[
+    './js/app/code_gen/buffers.js',
+    './js/app/code_gen/canvas.js',
+    './js/app/code_gen/draw.js',
+    './js/app/code_gen/enable-attributes.js',
+    './js/app/code_gen/field-pointers.js',
+    './js/app/code_gen/init-js.js',
+    './js/app/code_gen/init-programs.js',
+    './js/app/code_gen/shaders.js',
     './js/app/plugins/customControls.js',
     './js/app/plugins/codeGen.js'
   ]

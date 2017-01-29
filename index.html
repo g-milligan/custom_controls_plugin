@@ -12,7 +12,29 @@
 
   <div class="shader-fields"></div>
 
-  <div class="code-gen"></div>
+  <div class="code-gen">
+
+    <!--canvas-->
+
+    <!--shaders-->
+
+    <script type="text/javascript">/*<![CDATA[*/
+
+      /*init-js*/
+
+      /*init-programs*/
+
+      /*field-pointers*/
+
+      /*enable-attributes*/
+
+      /*buffers*/
+
+      /*draw*/
+
+    /*]]>*/</script>
+
+  </div>
 
   <script type="text/javascript">/*<![CDATA[*/
     jQuery(document).ready(function(){
@@ -65,8 +87,45 @@
       };
 
       var cg = codeGen.init({
-        selector:'.code-gen:first'
-
+        selector:'.code-gen:first',
+        regions:[
+          {
+            key:'canvas', update:codeGen_canvas
+          },
+          {
+            key:'shaders', update:codeGen_shaders
+          },
+          {
+            key:'init-js',
+            token_start:'/*', token_end:'*/',
+            update:codeGen_initJs
+          },
+          {
+            key:'init-programs',
+            token_start:'/*', token_end:'*/',
+            update:codeGen_initPrograms
+          },
+          {
+            key:'field-pointers',
+            token_start:'/*', token_end:'*/',
+            update:codeGen_fieldPointers
+          },
+          {
+            key:'enable-attributes',
+            token_start:'/*', token_end:'*/',
+            update:codeGen_enableAttributes
+          },
+          {
+            key:'buffers',
+            token_start:'/*', token_end:'*/',
+            update:codeGen_buffers
+          },
+          {
+            key:'draw',
+            token_start:'/*', token_end:'*/',
+            update:codeGen_draw
+          }
+        ]
       });
 
       var cc = customControls.init([
@@ -98,7 +157,7 @@
           label:'Process',
           submit_on_set:true,
           on_submit:function(vals){
-            var test='';
+            cg.update(vals);
           }
         }
       });
