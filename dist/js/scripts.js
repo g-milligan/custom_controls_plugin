@@ -1,3 +1,7 @@
+function codeGen_pageTitle(txt, args){
+  
+}
+
 function codeGen_buffers(txt, args){
 
 }
@@ -554,7 +558,7 @@ var customControls=(function(){
 var codeGen=(function(){
 
   var lookForArgs={
-    selector:undefined, //the selector for where to build the code
+
     token_start:'<!--', //default start for the region key tokens
     token_end:'-->', //default end for the region key tokens
     regions:[ //define the code regions that get created
@@ -579,7 +583,7 @@ var codeGen=(function(){
     init:function(args){
       var ret={};
       //the main update function that triggers all of the regions' update functions
-      ret['update']=function(vals){
+      ret['update']=function(output_files, vals){
 
       };
 

@@ -12,32 +12,63 @@
 
   <div class="shader-fields"></div>
 
-  <div class="code-gen">
-
-    <!--canvas-->
-
-    <!--shaders-->
-
-    <script type="text/javascript">/*<![CDATA[*/
-
-      /*init-js*/
-
-      /*init-programs*/
-
-      /*field-pointers*/
-
-      /*enable-attributes*/
-
-      /*buffers*/
-
-      /*draw*/
-
-    /*]]>*/</script>
-
-  </div>
-
   <script type="text/javascript">/*<![CDATA[*/
     jQuery(document).ready(function(){
+
+      //INIT CODE GEN
+
+      var cg = codeGen.init({
+        template_files:[
+          {
+            key:'main',
+            path:'codegen/template/webgl/index.html'
+          }
+        ],
+        regions:[
+          {
+            key:'page-title', update:codeGen_pageTitle
+          },
+          {
+            key:'canvas', update:codeGen_canvas
+          },
+          {
+            key:'shaders', update:codeGen_shaders
+          },
+          {
+            key:'init-js',
+            token_start:'/*', token_end:'*/',
+            update:codeGen_initJs
+          },
+          {
+            key:'init-programs',
+            token_start:'/*', token_end:'*/',
+            update:codeGen_initPrograms
+          },
+          {
+            key:'field-pointers',
+            token_start:'/*', token_end:'*/',
+            update:codeGen_fieldPointers
+          },
+          {
+            key:'enable-attributes',
+            token_start:'/*', token_end:'*/',
+            update:codeGen_enableAttributes
+          },
+          {
+            key:'buffers',
+            token_start:'/*', token_end:'*/',
+            update:codeGen_buffers
+          },
+          {
+            key:'draw',
+            token_start:'/*', token_end:'*/',
+            update:codeGen_draw
+          }
+        ]
+      });
+
+      //CUSTOM CONTROLS
+
       var fieldCategory={
         key:'category', label:'Category', type:'datalist',
         is_valid:function(wrap, valEl){ return true; },
@@ -86,49 +117,12 @@
         on_set:function(wrap, valEl){  }
       };
 
-      var cg = codeGen.init({
-        selector:'.code-gen:first',
-        regions:[
-          {
-            key:'canvas', update:codeGen_canvas
-          },
-          {
-            key:'shaders', update:codeGen_shaders
-          },
-          {
-            key:'init-js',
-            token_start:'/*', token_end:'*/',
-            update:codeGen_initJs
-          },
-          {
-            key:'init-programs',
-            token_start:'/*', token_end:'*/',
-            update:codeGen_initPrograms
-          },
-          {
-            key:'field-pointers',
-            token_start:'/*', token_end:'*/',
-            update:codeGen_fieldPointers
-          },
-          {
-            key:'enable-attributes',
-            token_start:'/*', token_end:'*/',
-            update:codeGen_enableAttributes
-          },
-          {
-            key:'buffers',
-            token_start:'/*', token_end:'*/',
-            update:codeGen_buffers
-          },
-          {
-            key:'draw',
-            token_start:'/*', token_end:'*/',
-            update:codeGen_draw
-          }
-        ]
-      });
+      //INIT CUSTOM CONTROLS
 
       var cc = customControls.init([
+        {
+          selector:'.shader-fields:first', key:'page-title', label:'Page Title', type:'input'
+        },
         {
             selector:'.shader-fields:first', key:'program', label:'Program',
             min_child_groups:1, max_child_groups:-1, columns:1,
@@ -157,7 +151,19 @@
           label:'Process',
           submit_on_set:true,
           on_submit:function(vals){
-            cg.update(vals);
+            if(vals['page-title']['val'].length>0){
+
+              cg.update(
+                [
+                  {
+                    key:'main',
+                    path:'codegen/builds/webgl/'+vals['page-title']['val']+'.html'
+                  }
+                ],
+                vals
+              );
+
+            }
           }
         }
       });
