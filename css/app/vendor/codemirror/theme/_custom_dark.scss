@@ -1,0 +1,77 @@
+$f-size-extra:18px;
+$f-size-bigger:16px;
+$f-size:14px;
+$f-size-smaller:12px;
+$f-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;
+
+/*heights*/
+$h-topnav: ($f-size * 2);
+$h-projectfile: ($f-size-smaller * 2);
+$h-panel-ctls: ($f-size * 2);
+$h_filenav_item:($f-size + 10);
+
+$codemirror_content_pad: $f-size;
+
+/*dark colors*/
+$c-dark0: #191C22;
+$c-dark1: #242A30;
+$c-dark2: #2D323B;
+
+/*standout highlight colors*/
+$c-highlight0: #6E9FEA;
+
+/*text colors*/
+$c-faded-txt: #69707a;
+$c-medium-txt: #9da5b4;
+$c-bright-txt: #d7dae0;
+
+
+.cm-s-custom-dark.CodeMirror {
+	background-color:transparent;
+	color: #abb2bf;
+	line-height: ($f-size-extra + 8);
+	font-size: $f-size-extra;
+	border:solid 1px #454b56;
+	background-color:#353a43;
+	margin-bottom:20px;
+}
+.cm-s-custom-dark div.CodeMirror-selected { background: rgba(221,240,255,0.2); }
+.cm-s-custom-dark .CodeMirror-line::selection, .cm-s-custom-dark .CodeMirror-line > span::selection, .cm-s-custom-dark .CodeMirror-line > span > span::selection { background: rgba(221,240,255,0.2); }
+.cm-s-custom-dark .CodeMirror-line::-moz-selection, .cm-s-custom-dark .CodeMirror-line > span::-moz-selection, .cm-s-custom-dark .CodeMirror-line > span > span::-moz-selection { background: rgba(221,240,255,0.2); }
+
+.cm-s-custom-dark .CodeMirror-gutters {
+	background-color:$c-dark2;
+	border-right: 0px;
+	padding: 0 3px;
+}
+.cm-s-custom-dark .CodeMirror-guttermarker { color: white; }
+.cm-s-custom-dark .CodeMirror-guttermarker-subtle { color: #8F938F; }
+.cm-s-custom-dark .CodeMirror-linenumber { color: #5c6370; }
+.cm-s-custom-dark .CodeMirror-cursor { border-left: 1px solid #A7A7A7; }
+.cm-s-custom-dark span.cm-comment { color:#5c6370;font-style:italic; }
+.cm-s-custom-dark span.cm-atom { color: #DE8E30; }
+.cm-s-custom-dark span.cm-number { color: #CCCCCC; }
+.cm-s-custom-dark span.cm-property { color: #61afef; }
+.cm-s-custom-dark span.cm-attribute { color: #d19a66; }
+.cm-s-custom-dark span.cm-keyword { color: #c678dd; }
+.cm-s-custom-dark span.cm-string { color: #98c379; }
+.cm-s-custom-dark span.cm-variable { color: #e5c07b; }
+.cm-s-custom-dark span.cm-variable-2 { color: #BEBF55; }
+.cm-s-custom-dark span.cm-variable-3 { color: #DE8E30; }
+.cm-s-custom-dark span.cm-def { color: #dbb5e4; }
+.cm-s-custom-dark span.cm-bracket { color: #abb2bf; }
+.cm-s-custom-dark span.cm-tag { color: #e06c75; }
+.cm-s-custom-dark span.cm-link { color: #ae81ff; }
+.cm-s-custom-dark span.cm-qualifier,.cm-s-custom-dark span.cm-builtin { color: #C1C144; }
+.cm-s-custom-dark span.cm-error {
+	background: #757aD8;
+	color: #f8f8f0;
+}
+.cm-s-custom-dark .CodeMirror-activeline-background { background: rgba(255, 255, 255, 0.031); }
+.cm-s-custom-dark .CodeMirror-matchingbracket {
+	border: 1px solid rgba(255,255,255,0.25);
+	color: #8F938F !important;
+	margin: -1px -1px 0 -1px;
+}
+
+.cm-s-custom-dark .CodeMirror-scrollbar-filler{background:transparent;}

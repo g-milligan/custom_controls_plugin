@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <link rel="stylesheet" type="text/css" href="css/styles.css" />
+  <script type="text/javascript" src="js/codemirror.js"></script>
   <script type="text/javascript" src="js/jquery.min.js"></script>
   <script type="text/javascript" src="js/scripts.js"></script>
 </head>
@@ -12,12 +13,15 @@
 
   <div class="shader-fields"></div>
 
+  <div class="code-regions"></div>
+
   <script type="text/javascript">/*<![CDATA[*/
     jQuery(document).ready(function(){
 
       //INIT CODE GEN
 
       var cg = codeGen.init({
+        selector:'.code-regions:first',
         template_files:[
           {
             key:'main',
@@ -26,43 +30,70 @@
         ],
         regions:[
           {
-            key:'page-title', update:codeGen_pageTitle
+            key:'page-title', template_files:['main'], update:codeGen_pageTitle,
+            cm:{
+              mode:'xml'
+            }
           },
           {
-            key:'canvas', update:codeGen_canvas
+            key:'canvas', template_files:['main'], update:codeGen_canvas,
+            cm:{
+              mode:'htmlmixed'
+            }
           },
           {
-            key:'shaders', update:codeGen_shaders
+            key:'shaders', template_files:['main'], update:codeGen_shaders,
+            cm:{
+              mode:'clike'
+            }
           },
           {
             key:'init-js',
             token_start:'/*', token_end:'*/',
-            update:codeGen_initJs
+            template_files:['main'], update:codeGen_initJs,
+            cm:{
+              mode:'javascript'
+            }
           },
           {
             key:'init-programs',
             token_start:'/*', token_end:'*/',
-            update:codeGen_initPrograms
+            template_files:['main'], update:codeGen_initPrograms,
+            cm:{
+              mode:'javascript'
+            }
           },
           {
             key:'field-pointers',
             token_start:'/*', token_end:'*/',
-            update:codeGen_fieldPointers
+            template_files:['main'], update:codeGen_fieldPointers,
+            cm:{
+              mode:'javascript'
+            }
           },
           {
             key:'enable-attributes',
             token_start:'/*', token_end:'*/',
-            update:codeGen_enableAttributes
+            template_files:['main'], update:codeGen_enableAttributes,
+            cm:{
+              mode:'javascript'
+            }
           },
           {
             key:'buffers',
             token_start:'/*', token_end:'*/',
-            update:codeGen_buffers
+            template_files:['main'], update:codeGen_buffers,
+            cm:{
+              mode:'javascript'
+            }
           },
           {
             key:'draw',
             token_start:'/*', token_end:'*/',
-            update:codeGen_draw
+            template_files:['main'], update:codeGen_draw,
+            cm:{
+              mode:'javascript'
+            }
           }
         ]
       });

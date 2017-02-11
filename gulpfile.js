@@ -13,6 +13,14 @@ var allSassDirs=['./css/*.scss','./css/**/*.scss','./css/**/**/*.scss','./css/**
 var allJsDirs=['./js/*.js','./js/**/*.js','./js/**/**/*.js','./js/**/**/**/*.js'];
 
 var jsFiles={
+  './dist/js/codemirror.js':[
+    './js/vendor/codemirror/codemirror.js',
+    './js/vendor/codemirror/mode/clike.js',
+    './js/vendor/codemirror/mode/css.js',
+    './js/vendor/codemirror/mode/htmlmixed.js',
+    './js/vendor/codemirror/mode/javascript.js',
+    './js/vendor/codemirror/mode/xml.js'
+  ],
   './dist/js/jquery.min.js':[
     './js/vendor/jquery.min.js'
   ],

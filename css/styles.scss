@@ -3,3 +3,8 @@
 @import "app/mixins";
 
 @import "app/plugins/customControls";
+
+@import "app/vendor/codemirror/codemirror";
+@import "app/vendor/codemirror/addon/foldgutter";
+@import "app/vendor/codemirror/addon/show-hint";
+@import "app/vendor/codemirror/theme/custom_dark";
