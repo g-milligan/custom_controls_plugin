@@ -31,7 +31,11 @@ function codeGen_initPrograms(txt, args){
 
 }
 
-function codeGen_shaders(txt, args){
+function codeGen_vertexShaders(txt, args){
+
+}
+
+function codeGen_fragmentShaders(txt, args){
 
 }
 

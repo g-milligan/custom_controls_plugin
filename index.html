@@ -30,25 +30,31 @@
         ],
         regions:[
           {
-            key:'page-title', template_files:['main'], update:codeGen_pageTitle,
+            key:'page-title', label:'Page Title', template_files:['main'], update:codeGen_pageTitle,
             cm:{
               mode:'xml'
             }
           },
           {
-            key:'canvas', template_files:['main'], update:codeGen_canvas,
+            key:'canvas', label:'Canvas HTML', template_files:['main'], update:codeGen_canvas,
             cm:{
               mode:'htmlmixed'
             }
           },
           {
-            key:'shaders', template_files:['main'], update:codeGen_shaders,
+            key:'vertex-shaders', label:'Vertex Shaders', template_files:['main'], update:codeGen_vertexShaders,
             cm:{
               mode:'clike'
             }
           },
           {
-            key:'init-js',
+            key:'fragment-shaders', label:'Fragment Shaders', template_files:['main'], update:codeGen_fragmentShaders,
+            cm:{
+              mode:'clike'
+            }
+          },
+          {
+            key:'init-js', label:'Init Js', summary:'Init the gl object, etc...',
             token_start:'/*', token_end:'*/',
             template_files:['main'], update:codeGen_initJs,
             cm:{
@@ -56,7 +62,7 @@
             }
           },
           {
-            key:'init-programs',
+            key:'init-programs', label:'Init Programs',
             token_start:'/*', token_end:'*/',
             template_files:['main'], update:codeGen_initPrograms,
             cm:{
@@ -64,7 +70,7 @@
             }
           },
           {
-            key:'field-pointers',
+            key:'field-pointers', label:'Field Pointers',
             token_start:'/*', token_end:'*/',
             template_files:['main'], update:codeGen_fieldPointers,
             cm:{
@@ -72,7 +78,7 @@
             }
           },
           {
-            key:'enable-attributes',
+            key:'enable-attributes', label:'Enable Attributes',
             token_start:'/*', token_end:'*/',
             template_files:['main'], update:codeGen_enableAttributes,
             cm:{
@@ -80,7 +86,7 @@
             }
           },
           {
-            key:'buffers',
+            key:'buffers', label:'Buffers',
             token_start:'/*', token_end:'*/',
             template_files:['main'], update:codeGen_buffers,
             cm:{
@@ -88,7 +94,7 @@
             }
           },
           {
-            key:'draw',
+            key:'draw', label:'Draw',
             token_start:'/*', token_end:'*/',
             template_files:['main'], update:codeGen_draw,
             cm:{
