@@ -35,6 +35,7 @@ var jsFiles={
     './codegen/template/webgl/js/init-programs.js',
     './codegen/template/webgl/js/vertex-shaders.js',
     './codegen/template/webgl/js/fragment-shaders.js',
+    './js/app/get_post.js',
     './js/app/plugins/customControls.js',
     './js/app/plugins/codeGen.js'
   ]

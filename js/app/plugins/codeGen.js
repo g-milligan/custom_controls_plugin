@@ -15,12 +15,11 @@ var codeGen=(function(){
         key:'region1',
         label:'Region 1',
         summary:'Region 1 summary',
-        mode:'***', //codemirror type of code this region displays
         token_start:undefined,
         token_end:undefined,
         template_files:['main'], //which files include content from this region
         cm:{
-          mode:'javascript'
+          mode:'javascript' //codemirror type of code this region displays
         },
         update:function(txt, args){
 
@@ -30,7 +29,6 @@ var codeGen=(function(){
         key:'region2',
         label:'Region 2',
         summary:'Region 2 summary',
-        mode:'***',
         template_files:['main'],
         cm:{
           mode:'javascript'
@@ -66,7 +64,7 @@ var codeGen=(function(){
         };
 
         var editor=CodeMirror.fromTextArea(textarea[0],config);
-        
+
         //wire up code mirror events
         editor.on('change',function(instance,object){
 

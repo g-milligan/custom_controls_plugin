@@ -39,11 +39,58 @@ function codeGen_fragmentShaders(txt, args){
 
 }
 
+//remove an array of project paths (and related data) from recent_projects.json
+function ajaxPost(path, sendArgs, callback, errCallback){
+  // construct an HTTP request
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', path, true);
+  xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+  xhr.onloadend=function(res){
+    //if the server responded with ok status
+    var res=JSON.parse(this.responseText);
+    if(res.status==='ok'){
+      //callback, if any
+      if(callback!=undefined){
+        callback(res);
+      }
+    }else{
+      if(errCallback!=undefined){
+        errCallback(res);
+      }
+    }
+  };
+  // send the collected data as JSON
+  xhr.send(JSON.stringify(sendArgs));
+}
+
+function ajaxGet(path, callback, errCallback){
+  var xmlhttp = new XMLHttpRequest();
+  xmlhttp.onreadystatechange=function(){
+    if (xmlhttp.readyState==4 && xmlhttp.status==200){
+      var str=xmlhttp.responseText;
+      var json=JSON.parse(str);
+      //if no errors
+      if(json.status==='ok'){
+        if(callback!=undefined){
+          callback(json);
+        }
+      }else{
+        if(errCallback!=undefined){
+          errCallback(json);
+        }
+      }
+    }
+  };
+  xmlhttp.open("GET",path,true);
+  xmlhttp.send();
+}
+
 var customControls=(function(){
 
   var lookForArgs={
     key:undefined, //key id for this control
     selector:undefined, //selector, where to place the control
+    save_in_folder:undefined, //saves the values into a folder and makes sure the control chooses the file name for the saved values
     label:'[label]', //control label
     type:undefined, //type: input, datalist, select, radio, checkbox, textarea
     option_groups:undefined, //options for datalist or select types
@@ -255,6 +302,7 @@ var customControls=(function(){
 
       html+='<div data-key="'+args['key']+'" class="custom-control-wrap">';
       html+='<label for="'+ck+'">'+args['label']+'</label>';
+
       if(args.hasOwnProperty('type')){
         html+='<div class="ctl">';
         html+=self['getCtlHtml_'+args['type']](ck,args);
@@ -438,7 +486,13 @@ var customControls=(function(){
         }
       });
     },
-    initControl:function(ctlJson, parentKey, wrap){
+    initControl:function(ctlArgs){
+      var ctlJson, parentKey, wrap, index, moreArgs;
+      if(ctlArgs.hasOwnProperty('ctlJson')){ ctlJson=ctlArgs['ctlJson']; }
+      if(ctlArgs.hasOwnProperty('parentKey')){ parentKey=ctlArgs['parentKey']; }
+      if(ctlArgs.hasOwnProperty('wrap')){ wrap=ctlArgs['wrap']; }
+      if(ctlArgs.hasOwnProperty('index')){ index=ctlArgs['index']; }
+      if(ctlArgs.hasOwnProperty('moreArgs')){ moreArgs=ctlArgs['moreArgs']; }
       var self=this;
       if(ctlJson!=undefined){
         var args={};
@@ -473,41 +527,83 @@ var customControls=(function(){
                 wrap=wrap.children('.children:last').children('.child-group:last');
               }
 
-              wrap.append(self['getCtlHtml'](wrap,args));
-              self['setCtlEvents'](wrap.children('.custom-control-wrap:last'),args);
-
-              for(var m=0;m<args['min_child_groups'];m++){
-                //recursive build child controls, if any
-                for(var c=0;c<args['children'].length;c++){
-                  self['initControl'](args['children'][c], args['key']);
-                }
-              }
-              //if can add more child groups on the fly
-              if(args['min_child_groups']!==args['max_child_groups']){
+              //function to build html
+              var buildHtml=function(ind){
+                wrap.append(self['getCtlHtml'](wrap,args));
+                self['setCtlEvents'](wrap.children('.custom-control-wrap:last'),args);
                 var ccw=wrap.children('.custom-control-wrap:last');
-                ccw.append('<div class="btn-add-child-group"><span>+ Add <span>'+args['label']+'</span></span></div>');
-                var addBtn=ccw.children('.btn-add-child-group:last');
-                ccw.addClass('can-have-children');
-                addBtn.click(function(){
-                  var w=jQuery(this).parents('.custom-control-wrap:first');
-                  var childArgs=w[0]['custom_ctl_args']['children'];
-                  var childWrap=w.children('.children:last');
-                  if(childWrap.length<1){
-                    jQuery(this).before('<div class="children"></div>');
-                    childWrap=w.children('.children:last');
+                ccw.attr('data-index', ind);
+
+                for(var m=0;m<args['min_child_groups'];m++){
+                  //recursive build child controls, if any
+                  for(var c=0;c<args['children'].length;c++){
+                    self['initControl']({ctlJson:args['children'][c], parentKey:args['key'], index:c, moreArgs:moreArgs});
                   }
-                  var newGroupIndex=childWrap.children('.child-group').length;
-                  while(childWrap.children('.child-group[data-group="'+newGroupIndex+'"]:first').length>0){
-                    newGroupIndex++;
+                }
+
+                //if can add more child groups on the fly
+                if(args['min_child_groups']!==args['max_child_groups']){
+                  ccw.append('<div class="btn-add-child-group"><span>+ Add <span>'+args['label']+'</span></span></div>');
+                  var addBtn=ccw.children('.btn-add-child-group:last');
+                  ccw.addClass('can-have-children');
+                  addBtn.click(function(){
+                    var w=jQuery(this).parents('.custom-control-wrap:first');
+                    var childArgs=w[0]['custom_ctl_args']['children'];
+                    var childWrap=w.children('.children:last');
+                    if(childWrap.length<1){
+                      jQuery(this).before('<div class="children"></div>');
+                      childWrap=w.children('.children:last');
+                    }
+                    var newGroupIndex=childWrap.children('.child-group').length;
+                    while(childWrap.children('.child-group[data-group="'+newGroupIndex+'"]:first').length>0){
+                      newGroupIndex++;
+                    }
+                    childWrap.append('<div data-group="'+newGroupIndex+'" class="child-group"></div>');
+                    for(var c=0;c<childArgs.length;c++){
+                      self['initControl']({ctlJson:childArgs[c], parentKey:w.attr('data-key'), wrap:w, index:c, moreArgs:moreArgs});
+                    }
+                    self['updateChildGroupCount'](w.children('.children:last'));
+                    self['initGetValues']();
+                  });
+                }
+                return ccw;
+              };
+
+              if(args.hasOwnProperty('save_in_folder')){
+                args['type']='datalist';
+                //get the saved files in this path
+                ajaxPost('/browse-files', {path:args['save_in_folder'], prefix:['_'], ext:['json']}, function(ar){
+                  //get options for projects json files already saved in the file system
+                  args['option_groups']={default:[]};
+                  for(var f=0;f<ar['files'].length;f++){
+                    var file=ar['files'][f];
+                    file=file.substring(1);
+                    file=file.substring(0, file.lastIndexOf('.'));
+                    var fileJson={}; fileJson[file]=file;
+                    args['option_groups']['default'].push(fileJson);
                   }
-                  childWrap.append('<div data-group="'+newGroupIndex+'" class="child-group"></div>');
-                  for(var c=0;c<childArgs.length;c++){
-                    self['initControl'](childArgs[c], w.attr('data-key'), w);
+                  var ccw=buildHtml(index);
+                  //make sure this ccw appears in the right order
+                  var ccwIndex=ccw.attr('data-index'); ccwIndex=parseInt(ccwIndex);
+                  if(ccwIndex!==ccw.index()){
+                    if(ccwIndex===0){
+                      ccw.parent().prepend(ccw); //move first
+                    }else{
+                      ccw.parent().children().eq(ccwIndex-1).after(ccw); //move after some other previous index
+                    }
                   }
-                  self['updateChildGroupCount'](w.children('.children:last'));
-                  self['initGetValues']();
+                  //finish up delayed init
+                  ccw.find('.children').each(function(){
+                    self['updateChildGroupCount'](jQuery(this));
+                  });
+                  self['initGetValues'](moreArgs);
+                },function(ar){
+                  buildHtml(index);
                 });
+              }else{
+                buildHtml(index);
               }
+
             }
           }
         }
@@ -542,7 +638,7 @@ var customControls=(function(){
       var ret={}, self=this;
       if(ctlArray!=undefined && ctlArray.length>0){
         for(var c=0;c<ctlArray.length;c++){
-          self['initControl'](ctlArray[c]);
+          self['initControl']({ctlJson:ctlArray[c], index:c, moreArgs:moreArgs});
         }
         jQuery('.custom-control-wrap .children').each(function(){
           self['updateChildGroupCount'](jQuery(this));
@@ -577,12 +673,11 @@ var codeGen=(function(){
         key:'region1',
         label:'Region 1',
         summary:'Region 1 summary',
-        mode:'***', //codemirror type of code this region displays
         token_start:undefined,
         token_end:undefined,
         template_files:['main'], //which files include content from this region
         cm:{
-          mode:'javascript'
+          mode:'javascript' //codemirror type of code this region displays
         },
         update:function(txt, args){
 
@@ -592,7 +687,6 @@ var codeGen=(function(){
         key:'region2',
         label:'Region 2',
         summary:'Region 2 summary',
-        mode:'***',
         template_files:['main'],
         cm:{
           mode:'javascript'
@@ -628,7 +722,7 @@ var codeGen=(function(){
         };
 
         var editor=CodeMirror.fromTextArea(textarea[0],config);
-        
+
         //wire up code mirror events
         editor.on('change',function(instance,object){
 

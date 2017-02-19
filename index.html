@@ -26,6 +26,14 @@
           {
             key:'main',
             path:'codegen/template/webgl/index.html'
+          },
+          {
+            key:'css',
+            path:'codegen/template/webgl/css/styles.css'
+          },
+          {
+            key:'jquery',
+            path:'codegen/template/webgl/js/jquery.min.js'
           }
         ],
         regions:[
@@ -156,9 +164,11 @@
 
       //INIT CUSTOM CONTROLS
 
+      var saveFolder='codegen/builds/webgl/';
+
       var cc = customControls.init([
         {
-          selector:'.shader-fields:first', key:'page-title', label:'Page Title', type:'input'
+          selector:'.shader-fields:first', key:'page-title', label:'Page Title', save_in_folder:saveFolder
         },
         {
             selector:'.shader-fields:first', key:'program', label:'Program',
@@ -194,7 +204,15 @@
                 [
                   {
                     key:'main',
-                    path:'codegen/builds/webgl/'+vals['page-title']['val']+'.html'
+                    path:saveFolder+vals['page-title']['val']+'.html'
+                  },
+                  {
+                    key:'css',
+                    path:saveFolder+'css/styles.css'
+                  },
+                  {
+                    key:'js',
+                    path:saveFolder+'js/jquery.min.js'
                   }
                 ],
                 vals
