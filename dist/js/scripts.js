@@ -583,6 +583,8 @@ var customControls=(function(){
                     args['option_groups']['default'].push(fileJson);
                   }
                   var ccw=buildHtml(index);
+                  ccw.addClass('save-in-folder');
+                  ccw.find('.val:first').addClass('save-in-folder');
                   //make sure this ccw appears in the right order
                   var ccwIndex=ccw.attr('data-index'); ccwIndex=parseInt(ccwIndex);
                   if(ccwIndex!==ccw.index()){
