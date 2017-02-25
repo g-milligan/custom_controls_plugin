@@ -341,7 +341,38 @@ var customControls=(function(){
         setFromWrap[0]['custom_ctl_args']['on_set'](setFromWrap, setFromWrap.find('.ctl .val:first'));
       }
     },
+    initWriteConfigFileJson:function(json){
+      var ccw=json['ccw'], args=json['args'], moreArgs=json['moreArgs'];
+
+      var originalOnSubmit=moreArgs['submit']['on_submit'];
+      moreArgs['submit']['on_submit']=function(vals){
+        originalOnSubmit(vals);
+        var savePath=args['save_in_folder'];
+        var file=ccw.find('.val.save-in-folder:first').val(); file=file.trim();
+        if(file.length>0){
+          savePath+='_'+file+'.json';
+          ajaxPost('/write-controls-config', {path:'./'+savePath, vals:vals}, function(ret){
+
+
+
+
+
+
+
+          }, function(ret){
+
+
+
+
+
+
+            
+          });
+        }
+      };
+    },
     initGetValues:function(moreArgs){
+      var self=this;
       //set more args
       if(moreArgs==undefined){
         moreArgs=jQuery('.custom-control-wrap:first')[0]['custom_ctl_args']['more_args'];
@@ -512,6 +543,8 @@ var customControls=(function(){
                     self['updateChildGroupCount'](jQuery(this));
                   });
                   self['initGetValues'](moreArgs);
+                  //init write configuration to .json file
+                  self['initWriteConfigFileJson']({ccw:ccw, args:args, moreArgs:moreArgs});
                 },function(ar){
                   buildHtml(index);
                 });

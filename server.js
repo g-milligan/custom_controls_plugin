@@ -138,6 +138,26 @@ app.post('/browse-files', function(req, res){
   }
 });
 
+//request to browse file system
+app.post('/write-controls-config', function(req, res){
+  var fromUrl=req.headers.referer;
+  //if the request came from this local site
+  if(isSameHost(fromUrl)){
+    var resJson={status:'error, no path provided'};
+    if(req.body.hasOwnProperty('path')){
+      var path=req.body.path;
+      resJson['status']='error, no vals provided';
+      if(req.body.hasOwnProperty('vals')){
+        var vals=req.body.vals;
+        var valsStr=JSON.stringify(vals);
+        fs.writeFileSync(path, valsStr);
+        resJson['status']='ok';
+      }
+    }
+    res.send(JSON.stringify(resJson));
+  }
+});
+
 //***
 
 //start up tab
