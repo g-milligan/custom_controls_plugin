@@ -158,6 +158,30 @@ app.post('/write-controls-config', function(req, res){
   }
 });
 
+//load json from a saved _controls.json file
+app.post('/load-controls-config', function(req, res){
+  var fromUrl=req.headers.referer;
+  //if the request came from this local site
+  if(isSameHost(fromUrl)){
+    var resJson={status:'error, no path provided'};
+    if(req.body.hasOwnProperty('path')){
+      var path=req.body.path;
+      if(fs.existsSync(path)){
+        if(fs.lstatSync(path).isFile()){
+          var fileJson=fs.readFileSync(path, 'utf8');
+          resJson['json']=fileJson;
+          resJson['status']='ok';
+        }else{
+          resJson['status']='error, not a file, "'+path+'"';
+        }
+      }else{
+        resJson['status']='error, path doesn\'t exist, "'+path+'"';
+      }
+    }
+    res.send(JSON.stringify(resJson));
+  }
+});
+
 //***
 
 //start up tab

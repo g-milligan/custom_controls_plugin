@@ -431,15 +431,38 @@ var customControls=(function(){
     initWriteConfigFileJson:function(json){
       var ccw=json['ccw'], args=json['args'], moreArgs=json['moreArgs'];
 
+      var savePath=args['save_in_folder'];
+
+      //load file changes when a file name is entered
+      var originalOnSet=ccw[0]['custom_ctl_args']['on_set'];
+      ccw[0]['custom_ctl_args']['on_set']=function(wr, valEl){
+        var file=ccw.find('.val.save-in-folder:first').val(); file=file.trim();
+        if(file.length>0){
+          var loadPath='./'+savePath+'_'+file+'.json';
+          ajaxPost('/load-controls-config', {path:loadPath}, function(ret){
+            //load saved json
+            var confJson=JSON.parse(ret['json']);
+            var test='';
+
+
+          }, function(ret){
+            //this saved json file doesn't exists
+
+
+
+          });
+        }
+      };
+
+      //write file changes on submit
       var originalOnSubmit=moreArgs['submit']['on_submit'];
       moreArgs['submit']['on_submit']=function(vals){
         originalOnSubmit(vals);
-        var savePath=args['save_in_folder'];
         var file=ccw.find('.val.save-in-folder:first').val(); file=file.trim();
         if(file.length>0){
-          savePath+='_'+file+'.json';
-          ajaxPost('/write-controls-config', {path:'./'+savePath, vals:vals}, function(ret){
-
+          var writePath='./'+savePath+'_'+file+'.json';
+          ajaxPost('/write-controls-config', {path:writePath, vals:vals}, function(ret){
+            //save success message
 
 
 
@@ -447,13 +470,13 @@ var customControls=(function(){
 
 
           }, function(ret){
+            //save failed message
 
 
 
 
 
 
-            
           });
         }
       };
