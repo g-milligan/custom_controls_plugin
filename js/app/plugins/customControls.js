@@ -82,10 +82,11 @@ var customControls=(function(){
         return sel.val();
       };
       //set value
-      wrap[0]['custom_ctl_args']['set_value']=function(w, v){
+      wrap[0]['custom_ctl_args']['set_value']=function(w, v, triggerOnSet){
+        if(triggerOnSet==undefined){ triggerOnSet=true; }
         var sel=w.find('.ctl .val:first');
         sel.val(v);
-        args['on_set'](w, sel);
+        if(triggerOnSet){ args['on_set'](w, sel); }
         return sel.val();
       };
       //disable
@@ -131,7 +132,6 @@ var customControls=(function(){
 
 
 
-
     setCtlEvents_allInputs:function(wrap){
       var self=this;
       var args=wrap[0]['custom_ctl_args'];
@@ -159,10 +159,10 @@ var customControls=(function(){
         return inp.val();
       };
       //set value
-      wrap[0]['custom_ctl_args']['set_value']=function(w, v){
+      wrap[0]['custom_ctl_args']['set_value']=function(w, v, triggerOnSet){
         var inp=w.find('.ctl .val:first');
         inp.val(v);
-        args['on_set'](w, inp);
+        if(triggerOnSet){ args['on_set'](w, inp); }
         return inp.val();
       };
       //disable
@@ -342,7 +342,7 @@ var customControls=(function(){
       }
     },
     initWriteConfigFileJson:function(json){
-      var ccw=json['ccw'], args=json['args'], moreArgs=json['moreArgs'];
+      var self=this, ccw=json['ccw'], args=json['args'], moreArgs=json['moreArgs'];
 
       var savePath=args['save_in_folder'];
 
@@ -355,9 +355,7 @@ var customControls=(function(){
           ajaxPost('/load-controls-config', {path:loadPath}, function(ret){
             //load saved json
             var confJson=JSON.parse(ret['json']);
-            var test='';
-
-
+            self['setValues'](ccw, confJson);
           }, function(ret){
             //this saved json file doesn't exists
 
@@ -393,6 +391,30 @@ var customControls=(function(){
           });
         }
       };
+    },
+    setValues:function(wr, vals){
+      var wrap=wr.parents('.custom-control-wrap:last');
+      if(wrap.length<1){
+        wrap=wr.parent();
+      }else{
+        wrap=wrap.parent();
+      }
+
+
+      //set all of the values in the vals json
+
+
+
+
+
+
+
+      
+
+
+
+
+
     },
     initGetValues:function(moreArgs){
       var self=this;
