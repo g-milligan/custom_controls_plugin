@@ -237,6 +237,27 @@ var customControls=(function(){
         }
       }
     },
+    removeAllReset:function(wr){
+      var removeBtns=wr.find('.btn-remove'), self=this;
+
+      //mark elements with either "remove-this" or "update-this" class
+      removeBtns.each(function(){
+        var childGroup=jQuery(this).parents('.child-group:first');
+        childGroup.addClass('remove-this');
+        var cw=childGroup.parents('.children:first');
+        cw.addClass('update-this');
+      });
+
+      //remove "remove-this" elements
+      wr.find('.remove-this').remove();
+
+      //update "update-this" elements
+      wr.find('.update-this').each(function(){
+        self['updateChildGroupCount'](jQuery(this));
+      });
+
+      wr.find('.update-this').removeClass('update-this');
+    },
     updateChildGroupCount:function(childWrap){
       var self=this;
       var wrap=childWrap.parents('.custom-control-wrap:first');
@@ -393,6 +414,7 @@ var customControls=(function(){
       };
     },
     setValues:function(wr, vals){
+      var self=this;
       var wrap=wr.parents('.custom-control-wrap:last');
       if(wrap.length<1){
         wrap=wr.parent();
@@ -400,17 +422,65 @@ var customControls=(function(){
         wrap=wrap.parent();
       }
 
+      //press all of the remove buttons
+      self['removeAllReset'](wrap);
 
-      //set all of the values in the vals json
+      //get all of the add buttons and put them in a json with a data-key lookup
+      var addBtnsJson={};
+      var addBtns=wrap.find('.btn-add-child-group');
+      addBtns.each(function(){
+        var dataKeys=[];
+        jQuery(this).parents('[data-key]').each(function(){
+          dataKeys.push(jQuery(this).attr('data-key'));
+        });
 
+        var dataKeysStr='';
+        for(k=dataKeys.length-1;k>-1;k--){
+          var key=dataKeys[k];
+          if(dataKeysStr.length>0){ dataKeysStr+='>'; }
+          dataKeysStr+=key;
+        }
 
+        addBtnsJson[dataKeysStr]=jQuery(this);
 
+      });
 
+      //get all of the values into key format and count how many of each key needs a field
+      var valsToLoad={}, valKeyCount={};
+      var loopValsLvl=function(json, keyStr, countKeys){
+        for(var key in json){
+          if(json.hasOwnProperty(key)){
 
+            var loadKey=keyStr; var newAddKey=countKeys;
+            if(loadKey.length>0){ loadKey+='>'; }
+            if(newAddKey.length>0){ newAddKey+='>'; }
+            loadKey+=key; newAddKey+=key;
 
+            if(json[key].hasOwnProperty('val')){
+              valsToLoad[loadKey]=json[key]['val'];
 
+              if(!valKeyCount.hasOwnProperty(newAddKey)){
+                valKeyCount[newAddKey]=1;
+              }else{
+                var num=valKeyCount[newAddKey];
+                num++;
+                valKeyCount[newAddKey]=num;
+              }
+            }
+            if(json[key].hasOwnProperty('children')){
+              for(var c=0;c<json[key]['children'].length;c++){
+                loopValsLvl(json[key]['children'][c], loadKey+':'+c, newAddKey);
+              }
+            }
+          }
+        }
+      };
+      loopValsLvl(vals, '', '');
+
+      //make sure there are enough fields added
+      var test='';
       
-
+      //set all of the values in the vals json
 
 
 
