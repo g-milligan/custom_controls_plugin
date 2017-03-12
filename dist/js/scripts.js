@@ -564,13 +564,85 @@ var customControls=(function(){
       };
       loopValsLvl(vals, '', '');
 
+      //just a function to convert "key1:index>key2" into a jquery selector
+      var keyToSelect=function(k, limitPos){
+        var ar=k.split('>');
+        var sel='';
+        for(var a=0;a<ar.length;a++){
+          var item=ar[a];
+          var indexSel='';
+          if(item.indexOf(':')!==-1){
+            indexSel=item.substring(item.lastIndexOf(':')+':'.length);
+            indexSel=':eq('+indexSel+')';
+            item=item.substring(0, item.lastIndexOf(':'));
+          }
+          if(sel.length>0){ sel+=' '; }
+          sel+='.custom-control-wrap[data-key="'+item+'"]'+indexSel;
+        }
+        if(limitPos!=undefined){
+          if(sel.lastIndexOf(')')!==sel.length-')'.length){
+            sel+=limitPos;
+          }
+        }
+        return sel;
+      };
+
+      //just a function to convert "key1:index>key2" to "key1>key2"
+      var keyWithoutIndex=function(k){
+        var noIndexKeys='';
+        var ar=k.split('>');
+        for(var a=0;a<ar.length;a++){
+          var item=ar[a];
+          if(item.indexOf(':')!==-1){
+            item=item.substring(0, item.lastIndexOf(':'));
+          }
+          if(noIndexKeys.length>0){ noIndexKeys+='>'; }
+          noIndexKeys+=item;
+        }
+        return noIndexKeys;
+      };
+
       //make sure there are enough fields added
-      var test='';
-      
+      for(var key in valKeyCount){
+        if(valKeyCount.hasOwnProperty(key)){
+          var count=valKeyCount[key];
+          var sel=keyToSelect(key);
+          var countedEls=wrap.find(sel);
+          //if need to add elements
+          if(count>countedEls.length){
+            var ar=key.split('>');
+            var assembleKey='';
+            for(var a=0;a<ar.length;a++){
+              if(assembleKey.length>0){ assembleKey+='>'; }
+              assembleKey+=ar[a];
+              var assembledSel=keyToSelect(assembleKey);
+              var assembledCount=jQuery(assembledSel).length;
+              if(assembledCount<count){
+                var numToAdd=count-assembledCount;
+                for(var n=0;n<numToAdd;n++){
+                  var keyNoIndex=keyWithoutIndex(assembleKey);
+                  var btn=addBtnsJson[keyNoIndex];
+                  btn.click(); //add
+                }
+              }
+            }
+          }
+        }
+      }
+
       //set all of the values in the vals json
-
-
-
+      for(var key in valsToLoad){
+        if(valsToLoad.hasOwnProperty(key)){
+          var val=valsToLoad[key];
+          var sel=keyToSelect(key, ':first');
+          var ccw=wrap.find(sel);
+          var currentVal=ccw[0]['custom_ctl_args'].get_value(ccw);
+          if(val!=currentVal){
+            //set this value, false = don't trigger event
+            ccw[0]['custom_ctl_args'].set_value(ccw, val, false);
+          }
+        }
+      }
 
     },
     initGetValues:function(moreArgs){

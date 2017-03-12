@@ -149,7 +149,7 @@ app.post('/write-controls-config', function(req, res){
       resJson['status']='error, no vals provided';
       if(req.body.hasOwnProperty('vals')){
         var vals=req.body.vals;
-        var valsStr=JSON.stringify(vals);
+        var valsStr=JSON.stringify(vals, undefined, 2);
         fs.writeFileSync(path, valsStr);
         resJson['status']='ok';
       }
