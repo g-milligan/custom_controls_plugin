@@ -425,28 +425,8 @@ var customControls=(function(){
       //press all of the remove buttons
       self['removeAllReset'](wrap);
 
-      //get all of the add buttons and put them in a json with a data-key lookup
-      var addBtnsJson={};
-      var addBtns=wrap.find('.btn-add-child-group');
-      addBtns.each(function(){
-        var dataKeys=[];
-        jQuery(this).parents('[data-key]').each(function(){
-          dataKeys.push(jQuery(this).attr('data-key'));
-        });
-
-        var dataKeysStr='';
-        for(k=dataKeys.length-1;k>-1;k--){
-          var key=dataKeys[k];
-          if(dataKeysStr.length>0){ dataKeysStr+='>'; }
-          dataKeysStr+=key;
-        }
-
-        addBtnsJson[dataKeysStr]=jQuery(this);
-
-      });
-
       //get all of the values into key format and count how many of each key needs a field
-      var valsToLoad={}, valKeyCount={};
+      var valsToLoad={};
       var loopValsLvl=function(json, keyStr, countKeys){
         for(var key in json){
           if(json.hasOwnProperty(key)){
@@ -458,14 +438,6 @@ var customControls=(function(){
 
             if(json[key].hasOwnProperty('val')){
               valsToLoad[loadKey]=json[key]['val'];
-
-              if(!valKeyCount.hasOwnProperty(newAddKey)){
-                valKeyCount[newAddKey]=1;
-              }else{
-                var num=valKeyCount[newAddKey];
-                num++;
-                valKeyCount[newAddKey]=num;
-              }
             }
             if(json[key].hasOwnProperty('children')){
               for(var c=0;c<json[key]['children'].length;c++){
@@ -486,7 +458,15 @@ var customControls=(function(){
           var indexSel='';
           if(item.indexOf(':')!==-1){
             indexSel=item.substring(item.lastIndexOf(':')+':'.length);
-            indexSel=':eq('+indexSel+')';
+            if(a+1<ar.length){
+              indexSel=' > .children > .child-group[data-group="'+indexSel+'"]';
+            }else{
+              if(a===0){
+                indexSel=':first';
+              }else{
+                indexSel=':eq('+indexSel+')';
+              }
+            }
             item=item.substring(0, item.lastIndexOf(':'));
           }
           if(sel.length>0){ sel+=' '; }
@@ -500,48 +480,41 @@ var customControls=(function(){
         return sel;
       };
 
-      //just a function to convert "key1:index>key2" to "key1>key2"
-      var keyWithoutIndex=function(k){
-        var noIndexKeys='';
-        var ar=k.split('>');
-        for(var a=0;a<ar.length;a++){
-          var item=ar[a];
-          if(item.indexOf(':')!==-1){
-            item=item.substring(0, item.lastIndexOf(':'));
+      var btnForKey=function(k){
+        var sel=keyToSelect(k);
+        var ccw=wrap.find(sel);
+        while(ccw.length<1){
+          var lastK=k;
+          if(k.indexOf('>')!==-1){
+            lastK=k.substring(k.lastIndexOf('>')+'>'.length);
           }
-          if(noIndexKeys.length>0){ noIndexKeys+='>'; }
-          noIndexKeys+=item;
+          if(lastK.indexOf(':')!==-1){
+            k=k.substring(0, k.lastIndexOf(':'));
+          }else{
+            k=k.substring(0, k.lastIndexOf('>'));
+          }
+          sel=keyToSelect(k);
+          ccw=wrap.find(sel);
         }
-        return noIndexKeys;
+        var btn=ccw.children('.btn-add-child-group:last');
+        return btn;
       };
 
-      //make sure there are enough fields added
-      for(var key in valKeyCount){
-        if(valKeyCount.hasOwnProperty(key)){
-          var count=valKeyCount[key];
-          var sel=keyToSelect(key);
-          var countedEls=wrap.find(sel);
-          //if need to add elements
-          if(count>countedEls.length){
-            var ar=key.split('>');
-            var assembleKey='';
-            for(var a=0;a<ar.length;a++){
-              if(assembleKey.length>0){ assembleKey+='>'; }
-              assembleKey+=ar[a];
-              var assembledSel=keyToSelect(assembleKey);
-              var assembledCount=jQuery(assembledSel).length;
-              if(assembledCount<count){
-                var numToAdd=count-assembledCount;
-                for(var n=0;n<numToAdd;n++){
-                  var keyNoIndex=keyWithoutIndex(assembleKey);
-                  var btn=addBtnsJson[keyNoIndex];
-                  btn.click(); //add
-                }
-              }
-            }
+      //add based on key
+      var addForKeys=function(k){
+        var ar=k.split('>'), items='';
+        for(var a=0;a<ar.length;a++){
+          var item=ar[a];
+          if(items.length>0){ items+='>'; }
+          items+=item;
+          var sel=keyToSelect(items);
+          var itemEl=wrap.find(sel);
+          if(itemEl.length<1){
+            var btn=btnForKey(items);
+            btn.click(); //add
           }
         }
-      }
+      };
 
       //set all of the values in the vals json
       for(var key in valsToLoad){
@@ -549,6 +522,10 @@ var customControls=(function(){
           var val=valsToLoad[key];
           var sel=keyToSelect(key, ':first');
           var ccw=wrap.find(sel);
+          if(ccw.length<1){
+            addForKeys(key);
+            var ccw=wrap.find(sel);
+          }
           var currentVal=ccw[0]['custom_ctl_args'].get_value(ccw);
           if(val!=currentVal){
             //set this value, false = don't trigger event

@@ -230,7 +230,7 @@ body {
 
 /* line 40, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap .ctl .val[disabled] {
-  background-color: #5c6167;
+  background-color: #828282;
 }
 
 /* line 46, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
@@ -261,7 +261,7 @@ body {
 /* line 59, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
 .custom-control-wrap.max-children .btn-add-child-group {
   text-decoration: line-through;
-  color: #5c6167;
+  color: #828282;
 }
 
 /* line 64, /Users/gmilligan/custom_controls_plugin/css/app/plugins/_customControls.scss */
