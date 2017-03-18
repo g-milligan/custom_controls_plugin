@@ -194,13 +194,24 @@
             ]
         }
       ], {
+        on_load:function(path, file, vals){
+          var test='';
+
+
+          //also load the cg data into the text region
+
+
+
+
+
+        },
         submit:{
           label:'Process',
           submit_on_set:true,
           on_submit:function(vals){
             if(vals['page-title']['val'].length>0){
 
-              cg.update(
+              cg.update( //write data to file(s)
                 [
                   {
                     key:'main',
@@ -223,7 +234,7 @@
         }
       });
 
-      //var test = cc.get_values(cc['top_wraps'].eq(0));
+
 
     });
   /*]]>*/</script>

@@ -105,6 +105,9 @@ var customControls=(function(){
   };
 
   var moreArgsToHave={
+    on_load:function(vals){
+
+    },
     submit:{
       label:'Submit',
       submit_on_set:true, //trigger on_submit for every individual on_set?
@@ -472,6 +475,8 @@ var customControls=(function(){
             //load saved json
             var confJson=JSON.parse(ret['json']);
             self['setValues'](ccw, confJson);
+            //trigger on_load event
+            moreArgs['on_load'](savePath, file, confJson);
           }, function(ret){
             //this saved json file doesn't exists
 
@@ -991,8 +996,11 @@ var codeGen=(function(){
                 }
               }
             }
-            //the main update function that triggers all of the regions' update functions
+            //the main write update function that triggers all of the regions' update functions
             ret['update']=function(output_files, vals){
+
+              
+
 
             };
           }

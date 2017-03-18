@@ -126,8 +126,11 @@ var codeGen=(function(){
                 }
               }
             }
-            //the main update function that triggers all of the regions' update functions
+            //the main write update function that triggers all of the regions' update functions
             ret['update']=function(output_files, vals){
+
+              
+
 
             };
           }
