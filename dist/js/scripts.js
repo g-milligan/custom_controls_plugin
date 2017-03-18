@@ -389,6 +389,14 @@ var customControls=(function(){
             var cw=removeWrap.parents('.children:first');
             removeWrap.remove();
             self['updateChildGroupCount'](cw);
+
+            //save to file, if submit_on_set is turned on
+            var topWrap=cw.parents('.custom-control-wrap:last');
+            var ma=topWrap[0]['custom_ctl_args']['more_args'];
+            if(ma['submit']['submit_on_set']){
+              var v=topWrap[0]['custom_ctl_args']['get_values'](topWrap);
+              ma['submit']['on_submit'](v);
+            }
           });
         }
         //child control count class
