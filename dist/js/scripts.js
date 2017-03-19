@@ -934,6 +934,7 @@ var codeGen=(function(){
         };
 
         var editor=CodeMirror.fromTextArea(textarea[0],config);
+        cmJson['editor']=editor;
 
         //wire up code mirror events
         editor.on('change',function(instance,object){
@@ -993,14 +994,32 @@ var codeGen=(function(){
                   textWrap.append('<textarea></textarea>');
                   var txtEl=textWrap.children('textarea:first');
                   self['initCodemirror'](txtEl, region);
+                  regionWrap[0]['region_args']=region;
                 }
               }
             }
-            //the main write update function that triggers all of the regions' update functions
+            //the main write update function that triggers all of the regions' update functions, based on modified vals
             ret['update']=function(output_files, vals){
 
-              
-
+              //for each region
+              var codeGenwrap=selEl.find('.code-gen-wrap:first');
+              codeGenwrap.children('.region').each(function(){
+                var regionEl=jQuery(this);
+                var dataKey=regionEl.attr('data-key');
+                var regionArgs=regionEl[0]['region_args'];
+                var txt=regionArgs['cm']['editor'].doc.getValue();
+                var newTxt=txt;
+                //update the region's content
+                newTxt=regionArgs['update'](txt, {
+                  code_gen:self, key:dataKey, vals:vals,
+                  region_args:regionArgs, frontend_wrap:regionEl
+                });
+                if(newTxt==undefined){ newTxt=txt; }
+                if(newTxt!=txt){
+                  //set the frontend textarea's updated value
+                  regionArgs['cm']['editor'].doc.setValue(newTxt);
+                }
+              });
 
             };
           }
