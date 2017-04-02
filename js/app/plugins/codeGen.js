@@ -2,8 +2,6 @@ var codeGen=(function(){
 
   var lookForArgs={
     selector:'body:first', //where to build the code edit regions
-    token_start:'<!--', //default start for the region key tokens
-    token_end:'-->', //default end for the region key tokens
     template_files:[
       {
         key:'main',
@@ -41,8 +39,8 @@ var codeGen=(function(){
   };
 
   var regionDefaultArgs={
-    token_start:'<!-- ',
-    token_end:' -->',
+    token_start:'<!--', //default start for the region key tokens
+    token_end:'-->', //default end for the region key tokens
     cm:{
       mode:'javascript'
     }
@@ -207,7 +205,7 @@ var codeGen=(function(){
 
                 }, function(ret){
                   //write error
-                  
+
                 });
               }
             };
