@@ -182,6 +182,39 @@ app.post('/load-controls-config', function(req, res){
   }
 });
 
+//write code regions into files
+app.post('/write-template-regions', function(req, res){
+  var fromUrl=req.headers.referer;
+  //if the request came from this local site
+  if(isSameHost(fromUrl)){
+    var resJson={status:'error, no data provided'};
+    if(req.body.hasOwnProperty('data')){
+      var data=req.body.data;
+      for(var regionKey in data){
+        if(data.hasOwnProperty(regionKey)){
+          if(data[regionKey].hasOwnProperty('regions')){
+            var template_path=data[regionKey]['template_path'];
+            var write_path=data[regionKey]['write_path'];
+
+            //if the write file doesn't already exist get the template file contents
+
+            //otherwise get the write file contents
+
+
+
+            for(var r=0;r<data[regionKey]['regions'].length;r++){
+              var regionJson=data[regionKey]['regions'][r];
+
+            }
+          }
+        }
+      }
+      resJson['status']='ok';
+    }
+    res.send(JSON.stringify(resJson));
+  }
+});
+
 //***
 
 //start up tab

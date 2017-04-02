@@ -1,5 +1,5 @@
 function codeGen_pageTitle(txt, args){
-  
+  return {txt:'new title'};
 }
 
 function codeGen_buffers(txt, args){
@@ -911,6 +911,8 @@ var codeGen=(function(){
   };
 
   var regionDefaultArgs={
+    token_start:'<!-- ',
+    token_end:' -->',
     cm:{
       mode:'javascript'
     }
@@ -1000,8 +1002,22 @@ var codeGen=(function(){
             }
             //the main write update function that triggers all of the regions' update functions, based on modified vals
             ret['update']=function(output_files, vals){
-
-              //for each region
+              //arrange output files so they can be looked up by their key
+              var output_files_lookup, input_files_lookup={};
+              if(output_files!=undefined){
+                output_files_lookup={};
+                for(var f=0;f<output_files.length;f++){
+                  var fjson=output_files[f]; var key=fjson['key'];
+                  output_files_lookup[key]=fjson;
+                }
+              }
+              //arrange the input/template files so they can be looked up by their key
+              for(var t=0;t<args['template_files'].length;t++){
+                var tjson=args['template_files'][t]; var key=tjson['key'];
+                input_files_lookup[key]=tjson;
+              }
+              //for each region (get the data that needs to be written to file)
+              var writeData={}, hasWriteData=false;
               var codeGenwrap=selEl.find('.code-gen-wrap:first');
               codeGenwrap.children('.region').each(function(){
                 var regionEl=jQuery(this);
@@ -1010,17 +1026,60 @@ var codeGen=(function(){
                 var txt=regionArgs['cm']['editor'].doc.getValue();
                 var newTxt=txt;
                 //update the region's content
-                newTxt=regionArgs['update'](txt, {
+                var txtPath=regionArgs['update'](txt, {
                   code_gen:self, key:dataKey, vals:vals,
                   region_args:regionArgs, frontend_wrap:regionEl
                 });
-                if(newTxt==undefined){ newTxt=txt; }
+                if(txtPath==undefined){ txtPath=''; }
+                if(typeof txtPath==='string'){ txtPath={txt:txtPath}; }
+                if(txtPath.hasOwnProperty('txt')){ newTxt=txtPath['txt']; }
                 if(newTxt!=txt){
                   //set the frontend textarea's updated value
                   regionArgs['cm']['editor'].doc.setValue(newTxt);
+                  //for each template file writePath defined to hold this region as a substring
+                  for(var f=0;f<regionArgs['template_files'].length;f++){
+                    var pathKey=regionArgs['template_files'][f];
+                    //set this as one of the code chunks to be written into file(s)
+                    var writePath;
+                    if(output_files_lookup!=undefined && output_files_lookup.hasOwnProperty(pathKey)){
+                      writePath=output_files_lookup[pathKey]['path'];
+                    }else{
+                      if(txtPath.hasOwnProperty('path')){
+                        writePath=txtPath['path'];
+                      }
+                    }
+                    if(writePath!=undefined){
+                      //get the original template path
+                      if(input_files_lookup.hasOwnProperty(pathKey)){
+                        var templatePath=input_files_lookup[pathKey]['path'];
+                        if(!writeData.hasOwnProperty(dataKey)){
+                          writeData[dataKey]={};
+                          writeData[dataKey]['template_path']=templatePath;
+                          writeData[dataKey]['write_path']=writePath;
+                          writeData[dataKey]['regions']=[];
+                        }
+                        writeData[dataKey]['regions'].push({
+                          token_start:regionArgs['token_start'],
+                          token_end:regionArgs['token_end'],
+                          new_txt:newTxt
+                        });
+                        hasWriteData=true;
+                      }
+                    }
+                  }
                 }
               });
+              //if there is any data to write
+              if(hasWriteData){
+                ajaxPost('/write-template-regions', writeData,
+                function(ret){
+                  //write successful
 
+                }, function(ret){
+                  //write error
+                  
+                });
+              }
             };
           }
         }
