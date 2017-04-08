@@ -213,7 +213,7 @@
       ], {
         //event fired for with the _file.json for the field values is loaded
         on_load:function(path, file, vals){
-          cg.load( //load the cg data into the text regions
+          cg.update( //load the cg data into the text regions
             getSavePaths(vals), vals
           );
         },
