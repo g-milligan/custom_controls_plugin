@@ -166,6 +166,23 @@
 
       var saveFolder='codegen/builds/webgl/';
 
+      var getSavePaths=function(vals){
+        return [
+          {
+            key:'main',
+            path:saveFolder+vals['page-title']['val']+'.html'
+          },
+          {
+            key:'css',
+            path:saveFolder+'css/styles.css'
+          },
+          {
+            key:'js',
+            path:saveFolder+'js/jquery.min.js'
+          }
+        ];
+      };
+
       var cc = customControls.init([
         {
           selector:'.shader-fields:first', key:'page-title', label:'Page Title', save_in_folder:saveFolder
@@ -194,41 +211,20 @@
             ]
         }
       ], {
+        //event fired for with the _file.json for the field values is loaded
         on_load:function(path, file, vals){
-          var test='';
-
-
-          //also load the cg data into the text region
-
-
-
-
-
+          cg.load( //load the cg data into the text regions
+            getSavePaths(vals), vals
+          );
         },
         submit:{
           label:'Process',
           submit_on_set:true,
           on_submit:function(vals){
             if(vals['page-title']['val'].length>0){
-
               cg.update( //write data to file(s)
-                [
-                  {
-                    key:'main',
-                    path:saveFolder+vals['page-title']['val']+'.html'
-                  },
-                  {
-                    key:'css',
-                    path:saveFolder+'css/styles.css'
-                  },
-                  {
-                    key:'js',
-                    path:saveFolder+'js/jquery.min.js'
-                  }
-                ],
-                vals
+                getSavePaths(vals), vals
               );
-
             }
           }
         }

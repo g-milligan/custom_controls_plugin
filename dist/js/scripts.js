@@ -999,7 +999,10 @@ var codeGen=(function(){
               }
             }
             //the main write update function that triggers all of the regions' update functions, based on modified vals
-            ret['update']=function(output_files, vals){
+            //1) outputs the edited text to the frontend
+            //2) writes edited text into the template file(s)
+            ret['update']=function(output_files, vals, doWriteToFile){
+              if(doWriteToFile==undefined){ doWriteToFile=true; }
               //arrange output files so they can be looked up by their key
               var output_files_lookup, input_files_lookup={};
               if(output_files!=undefined){
@@ -1034,34 +1037,37 @@ var codeGen=(function(){
                 if(newTxt!=txt){
                   //set the frontend textarea's updated value
                   regionArgs['cm']['editor'].doc.setValue(newTxt);
-                  //for each template file writePath defined to hold this region as a substring
-                  for(var f=0;f<regionArgs['template_files'].length;f++){
-                    var pathKey=regionArgs['template_files'][f];
-                    //set this as one of the code chunks to be written into file(s)
-                    var writePath;
-                    if(output_files_lookup!=undefined && output_files_lookup.hasOwnProperty(pathKey)){
-                      writePath=output_files_lookup[pathKey]['path'];
-                    }else{
-                      if(txtPath.hasOwnProperty('path')){
-                        writePath=txtPath['path'];
-                      }
-                    }
-                    if(writePath!=undefined){
-                      //get the original template path
-                      if(input_files_lookup.hasOwnProperty(pathKey)){
-                        var templatePath=input_files_lookup[pathKey]['path'];
-                        if(!writeData.hasOwnProperty(dataKey)){
-                          writeData[dataKey]={};
-                          writeData[dataKey]['template_path']=templatePath;
-                          writeData[dataKey]['write_path']=writePath;
-                          writeData[dataKey]['regions']=[];
+                  //if not simply loading the correct text for the region areas, and also must write changes to file
+                  if(doWriteToFile){
+                    //for each template file writePath defined to hold this region as a substring
+                    for(var f=0;f<regionArgs['template_files'].length;f++){
+                      var pathKey=regionArgs['template_files'][f];
+                      //set this as one of the code chunks to be written into file(s)
+                      var writePath;
+                      if(output_files_lookup!=undefined && output_files_lookup.hasOwnProperty(pathKey)){
+                        writePath=output_files_lookup[pathKey]['path'];
+                      }else{
+                        if(txtPath.hasOwnProperty('path')){
+                          writePath=txtPath['path'];
                         }
-                        writeData[dataKey]['regions'].push({
-                          token_start:regionArgs['token_start'],
-                          token_end:regionArgs['token_end'],
-                          new_txt:newTxt
-                        });
-                        hasWriteData=true;
+                      }
+                      if(writePath!=undefined){
+                        //get the original template path
+                        if(input_files_lookup.hasOwnProperty(pathKey)){
+                          var templatePath=input_files_lookup[pathKey]['path'];
+                          if(!writeData.hasOwnProperty(dataKey)){
+                            writeData[dataKey]={};
+                            writeData[dataKey]['template_path']=templatePath;
+                            writeData[dataKey]['write_path']=writePath;
+                            writeData[dataKey]['regions']=[];
+                          }
+                          writeData[dataKey]['regions'].push({
+                            token_start:regionArgs['token_start'],
+                            token_end:regionArgs['token_end'],
+                            new_txt:newTxt
+                          });
+                          hasWriteData=true;
+                        }
                       }
                     }
                   }
@@ -1086,6 +1092,10 @@ var codeGen=(function(){
 
                 });
               }
+            };
+            //1) outputs the edited text to the frontend
+            ret['load']=function(output_files, vals){
+              ret['update'](output_files, vals, false);
             };
           }
         }
