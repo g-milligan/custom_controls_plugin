@@ -68,6 +68,44 @@ var getExt=function(path){
   return ext;
 };
 
+var getReplacedRegion=function(fileBlob, insertTxt, tokenStart, tokenEnd, regionKey){
+  var tokenStartKey = tokenStart + regionKey + tokenEnd;
+  var tokenEndKey = tokenStart + '/' + regionKey + tokenEnd;
+  //<<<</~~~~~\>>>>
+  /*
+    <<<<    = before token start
+    /       = token start
+    ~~~~~   = between tokens
+    \       = token end
+    >>>>    = after token end
+  */
+  var tokenStartIndex=fileBlob.indexOf(tokenStartKey);
+  if(tokenStartIndex!==-1){
+    // beforeTokenStart = <<<<
+    var beforeTokenStart=fileBlob.substring(0, tokenStartIndex);
+    // fileBlob = /~~~~~\>>>>>>
+    fileBlob=fileBlob.substring(tokenStartIndex);
+    // fileBlob = ~~~~~\>>>>>> or >>>>>>
+    fileBlob=fileBlob.substring(tokenStartKey.length);
+
+    //if there is a token end, fileBlob = ~~~~~\>>>>>>
+    var tokenEndIndex=fileBlob.indexOf(tokenEndKey);
+    var prevBetweenTokens='';
+    if(tokenEndIndex!==-1){
+      // prevBetweenTokens = ~~~~~
+      prevBetweenTokens=fileBlob.substring(0, tokenEndIndex);
+      // fileBlob = >>>>>>
+      fileBlob=fileBlob.substring(tokenEndIndex + tokenEndKey.length);
+    }
+
+    // fileBlob = >>>>>>
+
+    //put it all together with the new insertTxt, replacing the ~~~~~ section
+    fileBlob = beforeTokenStart + tokenStartKey + insertTxt + tokenEndKey + fileBlob;
+  }
+  return fileBlob;
+};
+
 //***
 
 //request to browse file system
@@ -195,21 +233,51 @@ app.post('/write-template-regions', function(req, res){
           if(data[regionKey].hasOwnProperty('regions')){
             var template_path=data[regionKey]['template_path'];
             var write_path=data[regionKey]['write_path'];
+            var fileBlob;
+            //if the write file exists
+            if(fs.existsSync(write_path)){
+              if(fs.lstatSync(write_path).isFile()){
+                fileBlob=fs.readFileSync(write_path, 'utf8');
+              }else{
+                resJson['status']='error, not a file: ' + write_path;
+              }
+            }else if(fs.existsSync(template_path)){ //if the template file exists
+              if(fs.lstatSync(template_path).isFile()){
+                fileBlob=fs.readFileSync(template_path, 'utf8');
+              }else{
+                resJson['status']='error, not a file: ' + template_path;
+              }
+            }else{
+              resJson['status']='error, template path doesn\'t exist [' + template_path + '] AND ';
+              resJson['status']+='write path doesn\'t exist either [' + write_path + ']';
+            }
+            if(fileBlob!=undefined){
+              if(data[regionKey]['regions'].length>0){
+                var origBlob=fileBlob;
+                for(var r=0;r<data[regionKey]['regions'].length;r++){
+                  var regionJson=data[regionKey]['regions'][r];
 
-            //if the write file doesn't already exist get the template file contents
+                  var newTxt=regionJson['new_txt'];
+                  var tokenStart=regionJson['token_start'];
+                  var tokenEnd=regionJson['token_end'];
 
-            //otherwise get the write file contents
-
-
-
-            for(var r=0;r<data[regionKey]['regions'].length;r++){
-              var regionJson=data[regionKey]['regions'][r];
-
+                  //insert the newTxt into fileBlob
+                  fileBlob=getReplacedRegion(fileBlob, newTxt, tokenStart, tokenEnd, regionKey);
+                }
+                //if any changes were made
+                if(origBlob!=fileBlob){
+                  fs.writeFileSync(write_path, fileBlob);
+                  resJson['status']='ok';
+                }else{
+                  resJson['status']='error, no changes made to file, "' + regionKey + '", no region changes';
+                }
+              }else{
+                resJson['status']='error, no regions for file, "' + regionKey + '"';
+              }
             }
           }
         }
       }
-      resJson['status']='ok';
     }
     res.send(JSON.stringify(resJson));
   }

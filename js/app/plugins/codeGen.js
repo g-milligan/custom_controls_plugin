@@ -199,12 +199,20 @@ var codeGen=(function(){
               });
               //if there is any data to write
               if(hasWriteData){
-                ajaxPost('/write-template-regions', writeData,
+                ajaxPost('/write-template-regions', {data:writeData},
                 function(ret){
                   //write successful
 
+
+
+
+
                 }, function(ret){
                   //write error
+
+
+
+
 
                 });
               }
