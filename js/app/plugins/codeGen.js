@@ -134,7 +134,7 @@ var codeGen=(function(){
             ret['update']=function(output_files, vals, doWriteToFile){
               if(doWriteToFile==undefined){ doWriteToFile=true; }
               //arrange output files so they can be looked up by their key
-              var output_files_lookup, input_files_lookup={};
+              var output_files_lookup, input_files_lookup={}, unprocessedFileKeys=[];
               if(output_files!=undefined){
                 output_files_lookup={};
                 for(var f=0;f<output_files.length;f++){
@@ -145,15 +145,22 @@ var codeGen=(function(){
               //arrange the input/template files so they can be looked up by their key
               for(var t=0;t<args['template_files'].length;t++){
                 var tjson=args['template_files'][t]; var key=tjson['key'];
-                input_files_lookup[key]=tjson;
+                input_files_lookup[key]=tjson; unprocessedFileKeys.push(key);
               }
-              //for each region (get the data that needs to be written to file)
+              //for each region (get the text-code that needs to be written to file)
               var writeData={}, hasWriteData=false;
               var codeGenwrap=selEl.find('.code-gen-wrap:first');
               codeGenwrap.children('.region').each(function(){
                 var regionEl=jQuery(this);
                 var dataKey=regionEl.attr('data-key');
                 var regionArgs=regionEl[0]['region_args'];
+                //figure out the file(s) in which this region appears
+                for(var f=0;f<regionArgs['template_files'].length;f++){
+                  var ufkIndex=unprocessedFileKeys.indexOf(regionArgs['template_files'][f]);
+                  if(ufkIndex!==-1){
+                    unprocessedFileKeys.splice(ufkIndex,1);
+                  }
+                }
                 var txt=regionArgs['cm']['editor'].doc.getValue();
                 var newTxt=txt;
                 //update the region's content
@@ -209,17 +216,32 @@ var codeGen=(function(){
                 function(ret){
                   //write successful
 
-
-
-
-
                 }, function(ret){
                   //write error
 
-
-
-
-
+                });
+              }
+              //if there are any unprocessed files (ie: files that don't contain dynamic regions)
+              if(doWriteToFile && unprocessedFileKeys.length>0){
+                var writeFiles={};
+                for(var u=0;u<unprocessedFileKeys.length;u++){
+                  var ukey=unprocessedFileKeys[u];
+                  var input=input_files_lookup[ukey];
+                  var output=output_files_lookup[ukey];
+                  if(input!=undefined && output!=undefined){
+                    writeFiles[ukey]={
+                      template_path:input['path'],
+                      write_path:output['path']
+                    };
+                  }
+                }
+                ajaxPost('/write-template-files', {data:writeFiles},
+                function(ret){
+                  //write successful
+                  var test='';
+                }, function(ret){
+                  //write error
+                  var test='';
                 });
               }
             };

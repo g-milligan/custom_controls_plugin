@@ -227,7 +227,7 @@ app.post('/write-template-regions', function(req, res){
   if(isSameHost(fromUrl)){
     var resJson={status:'error, no data provided'};
     if(req.body.hasOwnProperty('data')){
-      var data=req.body.data;
+      var data=req.body.data; resJson['write_regions']=[];
       for(var regionKey in data){
         if(data.hasOwnProperty(regionKey)){
           if(data[regionKey].hasOwnProperty('regions')){
@@ -253,7 +253,7 @@ app.post('/write-template-regions', function(req, res){
             }
             if(fileBlob!=undefined){
               if(data[regionKey]['regions'].length>0){
-                var origBlob=fileBlob;
+                var origBlob=fileBlob; resJson['write_regions'].push(regionKey);
                 for(var r=0;r<data[regionKey]['regions'].length;r++){
                   var regionJson=data[regionKey]['regions'][r];
 
@@ -273,6 +273,43 @@ app.post('/write-template-regions', function(req, res){
                 }
               }else{
                 resJson['status']='error, no regions for file, "' + regionKey + '"';
+              }
+            }
+          }
+        }
+      }
+    }
+    res.send(JSON.stringify(resJson));
+  }
+});
+
+//write template files that don't have any regions to replace
+app.post('/write-template-files', function(req, res){
+  var fromUrl=req.headers.referer;
+  //if the request came from this local site
+  if(isSameHost(fromUrl)){
+    var resJson={status:'error, no data provided'};
+    if(req.body.hasOwnProperty('data')){
+      var data=req.body.data; resJson['copied_files']=[];
+      for(var fileKey in data){
+        if(data.hasOwnProperty(fileKey)){
+          var fileJson=data[fileKey];
+          if(fileJson.hasOwnProperty('template_path') && fileJson.hasOwnProperty('write_path')){
+            if(fs.existsSync(fileJson['template_path']) && fs.lstatSync(fileJson['template_path']).isFile()){
+              var templateBlob=fs.readFileSync(fileJson['template_path'], 'utf8');
+              //if the file exists at the build path
+              if(fs.existsSync(fileJson['write_path']) && fs.lstatSync(fileJson['write_path']).isFile()){
+                var writeBlob=fs.readFileSync(fileJson['write_path'], 'utf8');
+                //if there were changes to the build file
+                if(templateBlob!=writeBlob){
+                  //update the build file with the changed template contents
+                  fs.writeFileSync(fileJson['write_path'], templateBlob);
+                  resJson['copied_files'].push(fileJson);
+                }
+              }else{
+                //copy the template file to the build location
+                fs.writeFileSync(fileJson['write_path'], templateBlob);
+                resJson['copied_files'].push(fileJson);
               }
             }
           }
