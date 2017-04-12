@@ -106,6 +106,33 @@ var getReplacedRegion=function(fileBlob, insertTxt, tokenStart, tokenEnd, region
   return fileBlob;
 };
 
+//create directories (if they don't already exist) and write the file
+var writeFullFilePath=function(path, fileContent){
+  var ret={write:false, created_dirs:[]};
+  var dirs=path.split('/');
+
+  //first make sure all of the directories exists
+  var parentDirs='';
+  for(var d=0;d<dirs.length-1;d++){
+    var dir=dirs[d];
+    if(parentDirs.length>0){ parentDirs+='/'; }
+    parentDirs+=dir;
+    if(dir.length>0 && dir!=='.'){ //if this is not the first directory, ./
+      //if this directory doesn't already exist
+      if(!fs.existsSync(parentDirs)){
+        fs.mkdirSync(parentDirs);
+        ret['created_dirs'].push(parentDirs);
+      }
+    }
+  }
+  //if all parent directories exist, or there are no needed parent directories
+  if(parentDirs.length<1 || fs.existsSync(parentDirs)){
+    fs.writeFileSync(path, fileContent);
+    ret['write']=true;
+  }
+  return ret;
+};
+
 //***
 
 //request to browse file system
@@ -188,7 +215,7 @@ app.post('/write-controls-config', function(req, res){
       if(req.body.hasOwnProperty('vals')){
         var vals=req.body.vals;
         var valsStr=JSON.stringify(vals, undefined, 2);
-        fs.writeFileSync(path, valsStr);
+        writeFullFilePath(path, valsStr);
         resJson['status']='ok';
       }
     }
@@ -266,7 +293,7 @@ app.post('/write-template-regions', function(req, res){
                 }
                 //if any changes were made
                 if(origBlob!=fileBlob){
-                  fs.writeFileSync(write_path, fileBlob);
+                  writeFullFilePath(write_path, fileBlob);
                   resJson['status']='ok';
                 }else{
                   resJson['status']='error, no changes made to file, "' + regionKey + '", no region changes';
@@ -290,7 +317,8 @@ app.post('/write-template-files', function(req, res){
   if(isSameHost(fromUrl)){
     var resJson={status:'error, no data provided'};
     if(req.body.hasOwnProperty('data')){
-      var data=req.body.data; resJson['copied_files']=[];
+      var data=req.body.data; resJson['copied_files']=[]; resJson['nochange_files']=[]; resJson['error_files']=[];
+      resJson['status']='error, no files written, check "error_files" messages, if any';
       for(var fileKey in data){
         if(data.hasOwnProperty(fileKey)){
           var fileJson=data[fileKey];
@@ -303,15 +331,22 @@ app.post('/write-template-files', function(req, res){
                 //if there were changes to the build file
                 if(templateBlob!=writeBlob){
                   //update the build file with the changed template contents
-                  fs.writeFileSync(fileJson['write_path'], templateBlob);
+                  writeFullFilePath(fileJson['write_path'], templateBlob);
                   resJson['copied_files'].push(fileJson);
+                }else{
+                  resJson['nochange_files'].push(fileJson);
                 }
               }else{
                 //copy the template file to the build location
-                fs.writeFileSync(fileJson['write_path'], templateBlob);
+                writeFullFilePath(fileJson['write_path'], templateBlob);
                 resJson['copied_files'].push(fileJson);
               }
+              resJson['status']='ok';
+            }else{
+              resJson['error_files'].push('error, template does not exist, or is not a file, ' + fileJson['template_path']);
             }
+          }else{
+            resJson['error_files'].push('error, missing "template_path" or "write_path" for file, "' + fileKey + '"');
           }
         }
       }

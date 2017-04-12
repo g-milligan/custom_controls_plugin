@@ -1107,8 +1107,11 @@ var codeGen=(function(){
                 }
                 ajaxPost('/write-template-files', {data:writeFiles},
                 function(ret){
-                  //write successful
-                  var test='';
+                  if(ret['copied_files'].length>0){
+                    //write successful
+                  }else{
+                    //there may have been no changes to copy over
+                  }
                 }, function(ret){
                   //write error
                   var test='';
