@@ -4,7 +4,6 @@ function codeGen_pageTitle(txt, args){
 
 function codeGen_buffers(txt, args){
 
-  var test='';
 }
 
 function codeGen_canvas(txt, args){
@@ -1202,8 +1201,7 @@ var codeGen=(function(){
             //2) writes edited text into the template file(s)
             ret['update']=function(vals, doWriteToFile){
               if(doWriteToFile==undefined){ doWriteToFile=true; }
-              var output_files;
-              output_files=args['get_write_files'](vals);
+              var output_files=args['get_write_files'](vals);
               //arrange output files so they can be looked up by their key
               var output_files_lookup, input_files_lookup={}, unprocessedFileKeys=[];
               if(output_files!=undefined){
@@ -1310,18 +1308,51 @@ var codeGen=(function(){
                 function(ret){
                   if(ret['copied_files'].length>0){
                     //write successful
+
+
+
+
                   }else{
                     //there may have been no changes to copy over
+
+
+
                   }
                 }, function(ret){
                   //write error
-                  var test='';
+
+
+
+
                 });
               }
             };
             //1) outputs the edited text to the frontend
-            ret['load']=function(output_files, vals){
-              ret['update'](vals, false);
+            ret['load']=function(vals){
+              var output_files=args['get_write_files'](vals);
+              var codeGenwrap=selEl.find('.code-gen-wrap:first');
+              codeGenwrap.children('.region').each(function(){
+                var regionEl=jQuery(this);
+                var dataKey=regionEl.attr('data-key');
+                var regionArgs=regionEl[0]['region_args'];
+
+                //load the region code directly from the output_files
+
+
+
+
+
+
+
+              });
+
+
+
+
+
+
+
+
             };
             self['update']=ret['update'];
             self['load']=ret['load'];
