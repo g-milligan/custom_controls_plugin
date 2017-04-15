@@ -1,11 +1,10 @@
 function codeGen_vertexShaders(txt, args){
 
   //GENERATE CODE
-  var vertShaderFields='';
 
   //for each program
   args.cg.children('program', args.vals, function(progJson, p){
-    var vertFieldsLookup={};
+    var vertFieldsLookup={}, vertShaderFields='';
     //for each vertex shader-field in this program (add to lookup)
     args.cg.children('vertField', progJson, function(vfJson, v){
       var cval=vfJson['category']['val'], dval=vfJson['dimension']['val'], nval=vfJson['name']['val'];
@@ -42,7 +41,7 @@ function codeGen_vertexShaders(txt, args){
       newCode+='<script id="vs-'+progJson.name.val+'" type="x-shader/x-vertex">/*<![CDATA[*/\n';
       newCode+='\n';
       newCode+='/*fields*/\n';
-      newCode+=vertShaderFields+'\n';
+      newCode+=vertShaderFields;
       newCode+='/*/fields*/\n';
       newCode+='\n';
       newCode+='/*for program: '+progJson.name.val+'*/\n';

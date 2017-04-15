@@ -8,6 +8,14 @@ var codeGen=(function(){
         path:'codegen/template/new/index.html'
       }
     ],
+    get_write_files:function(vals){
+      return [
+        {
+          key:'main',
+          path:'codegen/build/new/index.html'
+        }
+      ];
+    },
     regions:[ //define the code regions that get created
       {
         key:'region1',
@@ -35,7 +43,19 @@ var codeGen=(function(){
 
         }
       },
-    ]
+    ],
+    on_blur:function(){
+
+    },
+    on_change:function(){
+
+    },
+    on_beforeChange:function(){
+
+    },
+    on_cursorActivity:function(){
+
+    }
   };
 
   var regionDefaultArgs={
@@ -139,7 +159,8 @@ var codeGen=(function(){
 
 
 
-    initCodemirror:function(textarea, json){
+    initCodemirror:function(textarea, json, allArgs){
+      var self=this;
       if(!textarea.hasOwnProperty('init-codemirror')){
         var cmJson=json['cm'];
 
@@ -161,12 +182,43 @@ var codeGen=(function(){
         //wire up code mirror events
         editor.on('change',function(instance,object){
 
+
+          if(json.hasOwnProperty('on_change')){
+            json['on_change'](instance,object,self);
+          }else{
+            allArgs['on_change'](instance,object,self);
+          }
         });
         editor.on('cursorActivity',function(instance,object){
 
+
+          if(json.hasOwnProperty('on_cursorActivity')){
+            json['on_cursorActivity'](instance,object,self);
+          }else{
+            allArgs['on_cursorActivity'](instance,object,self);
+          }
         });
         editor.on('beforeChange',function(instance,object){
 
+
+
+
+          if(json.hasOwnProperty('on_beforeChange')){
+            json['on_beforeChange'](instance,object,self);
+          }else{
+            allArgs['on_beforeChange'](instance,object,self);
+          }
+        });
+        editor.on('blur',function(instance,object){
+
+
+
+
+          if(json.hasOwnProperty('on_blur')){
+            json['on_blur'](instance,object,self);
+          }else{
+            allArgs['on_blur'](instance,object,self);
+          }
         });
       }
     },
@@ -215,7 +267,7 @@ var codeGen=(function(){
                   var textWrap=regionWrap.children('.textarea:last');
                   textWrap.append('<textarea></textarea>');
                   var txtEl=textWrap.children('textarea:first');
-                  self['initCodemirror'](txtEl, region);
+                  self['initCodemirror'](txtEl, region, args);
                   regionWrap[0]['region_args']=region;
                 }
               }
@@ -223,8 +275,10 @@ var codeGen=(function(){
             //the main write update function that triggers all of the regions' update functions, based on modified vals
             //1) outputs the edited text to the frontend
             //2) writes edited text into the template file(s)
-            ret['update']=function(output_files, vals, doWriteToFile){
+            ret['update']=function(vals, doWriteToFile){
               if(doWriteToFile==undefined){ doWriteToFile=true; }
+              var output_files;
+              output_files=args['get_write_files'](vals);
               //arrange output files so they can be looked up by their key
               var output_files_lookup, input_files_lookup={}, unprocessedFileKeys=[];
               if(output_files!=undefined){
@@ -266,37 +320,37 @@ var codeGen=(function(){
                 if(newTxt!=txt){
                   //set the frontend textarea's updated value
                   regionArgs['cm']['editor'].doc.setValue(newTxt);
-                  //if not simply loading the correct text for the region areas, and also must write changes to file
-                  if(doWriteToFile){
-                    //for each template file writePath defined to hold this region as a substring
-                    for(var f=0;f<regionArgs['template_files'].length;f++){
-                      var pathKey=regionArgs['template_files'][f];
-                      //set this as one of the code chunks to be written into file(s)
-                      var writePath;
-                      if(output_files_lookup!=undefined && output_files_lookup.hasOwnProperty(pathKey)){
-                        writePath=output_files_lookup[pathKey]['path'];
-                      }else{
-                        if(txtPath.hasOwnProperty('path')){
-                          writePath=txtPath['path'];
-                        }
+                }
+                //if not simply loading the correct text for the region areas, and also must write changes to file
+                if(doWriteToFile){
+                  //for each template file writePath defined to hold this region as a substring
+                  for(var f=0;f<regionArgs['template_files'].length;f++){
+                    var pathKey=regionArgs['template_files'][f];
+                    //set this as one of the code chunks to be written into file(s)
+                    var writePath;
+                    if(output_files_lookup!=undefined && output_files_lookup.hasOwnProperty(pathKey)){
+                      writePath=output_files_lookup[pathKey]['path'];
+                    }else{
+                      if(txtPath.hasOwnProperty('path')){
+                        writePath=txtPath['path'];
                       }
-                      if(writePath!=undefined){
-                        //get the original template path
-                        if(input_files_lookup.hasOwnProperty(pathKey)){
-                          var templatePath=input_files_lookup[pathKey]['path'];
-                          if(!writeData.hasOwnProperty(dataKey)){
-                            writeData[dataKey]={};
-                            writeData[dataKey]['template_path']=templatePath;
-                            writeData[dataKey]['write_path']=writePath;
-                            writeData[dataKey]['regions']=[];
-                          }
-                          writeData[dataKey]['regions'].push({
-                            token_start:regionArgs['token_start'],
-                            token_end:regionArgs['token_end'],
-                            new_txt:newTxt
-                          });
-                          hasWriteData=true;
+                    }
+                    if(writePath!=undefined){
+                      //get the original template path
+                      if(input_files_lookup.hasOwnProperty(pathKey)){
+                        var templatePath=input_files_lookup[pathKey]['path'];
+                        if(!writeData.hasOwnProperty(dataKey)){
+                          writeData[dataKey]={};
+                          writeData[dataKey]['template_path']=templatePath;
+                          writeData[dataKey]['write_path']=writePath;
+                          writeData[dataKey]['regions']=[];
                         }
+                        writeData[dataKey]['regions'].push({
+                          token_start:regionArgs['token_start'],
+                          token_end:regionArgs['token_end'],
+                          new_txt:newTxt
+                        });
+                        hasWriteData=true;
                       }
                     }
                   }
@@ -342,8 +396,10 @@ var codeGen=(function(){
             };
             //1) outputs the edited text to the frontend
             ret['load']=function(output_files, vals){
-              ret['update'](output_files, vals, false);
+              ret['update'](vals, false);
             };
+            self['update']=ret['update'];
+            self['load']=ret['load'];
           }
         }
       }

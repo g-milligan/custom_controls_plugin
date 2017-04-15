@@ -20,6 +20,8 @@
 
       //INIT CODE GEN
 
+      var saveFolder='codegen/builds/webgl/';
+
       var cg = codeGen.init({
         selector:'.code-regions:first',
         template_files:[
@@ -36,6 +38,22 @@
             path:'codegen/template/webgl/js/jquery.min.js'
           }
         ],
+        get_write_files:function(vals){
+          return [
+            {
+              key:'main',
+              path:saveFolder+vals['page-title']['val']+'.html'
+            },
+            {
+              key:'css',
+              path:saveFolder+'css/styles.css'
+            },
+            {
+              key:'jquery',
+              path:saveFolder+'js/jquery.min.js'
+            }
+          ];
+        },
         regions:[
           {
             key:'page-title', label:'Page Title', template_files:['main'], update:codeGen_pageTitle,
@@ -52,13 +70,13 @@
           {
             key:'vertex-shaders', label:'Vertex Shaders', template_files:['main'], update:codeGen_vertexShaders,
             cm:{
-              mode:'clike'
+              mode:'htmlmixed'
             }
           },
           {
             key:'fragment-shaders', label:'Fragment Shaders', template_files:['main'], update:codeGen_fragmentShaders,
             cm:{
-              mode:'clike'
+              mode:'htmlmixed'
             }
           },
           {
@@ -109,7 +127,14 @@
               mode:'javascript'
             }
           }
-        ]
+        ],
+        on_blur:function(instance,object,self){
+          var ccw=jQuery('.custom-control-wrap:first');
+          if(ccw.length>0){
+            var vals=ccw[0]['custom_ctl_args']['get_values'](ccw);
+            self['update'](vals);
+          }
+        }
       });
 
       //CUSTOM CONTROLS
@@ -164,25 +189,6 @@
 
       //INIT CUSTOM CONTROLS
 
-      var saveFolder='codegen/builds/webgl/';
-
-      var getSavePaths=function(vals){
-        return [
-          {
-            key:'main',
-            path:saveFolder+vals['page-title']['val']+'.html'
-          },
-          {
-            key:'css',
-            path:saveFolder+'css/styles.css'
-          },
-          {
-            key:'jquery',
-            path:saveFolder+'js/jquery.min.js'
-          }
-        ];
-      };
-
       var cc = customControls.init([
         {
           selector:'.shader-fields:first', key:'page-title', label:'Page Title', save_in_folder:saveFolder
@@ -213,18 +219,14 @@
       ], {
         //event fired for with the _file.json for the field values is loaded
         on_load:function(path, file, vals){
-          cg.update( //load the cg data into the text regions
-            getSavePaths(vals), vals
-          );
+          cg.update(vals); //load the cg data into the text regions
         },
         submit:{
           label:'Process',
           submit_on_set:true,
           on_submit:function(vals){
             if(vals['page-title']['val'].length>0){
-              cg.update( //write data to file(s)
-                getSavePaths(vals), vals
-              );
+              cg.update(vals); //write data to file(s)
             }
           }
         }
