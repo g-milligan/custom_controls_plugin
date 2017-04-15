@@ -47,6 +47,98 @@ var codeGen=(function(){
   };
 
   return{
+    //function used in the region code generators to travers json items
+    children:function(parentKey, vals, itemCallback){
+      if(itemCallback!=undefined){
+        if(vals.hasOwnProperty(parentKey)){
+          var parentNode=vals[parentKey];
+          if(parentNode.hasOwnProperty('children')){
+            for(var c=0;c<parentNode['children'].length;c++){
+              var itemJson=parentNode['children'][c];
+              itemCallback(itemJson, c);
+            }
+          }
+        }
+      }
+    },
+    //each json node
+    each:function(json, itemCallback){
+      var i=0;
+      for(var key in json){
+        if(json.hasOwnProperty(key)){
+          itemCallback(key, json[key], i);
+          i++;
+        }
+      }
+    },
+    //get the text between two tokens
+    getBetweenTokens:function(txt, tokenStart, regionKey, tokenEnd){
+      var ret;
+      var tokenStartKey = tokenStart + regionKey + tokenEnd;
+      var tokenEndKey = tokenStart + '/' + regionKey + tokenEnd;
+      ret={
+        startKey:tokenStartKey,
+        endKey:tokenEndKey
+      };
+      //txt = <<<</~~~~~\>>>>
+      /*
+        <<<<    = before token start
+        /       = token start
+        ~~~~~   = between tokens
+        \       = token end
+        >>>>    = after token end
+      */
+      var tokenStartIndex=txt.indexOf(tokenStartKey);
+      if(tokenStartIndex!==-1){
+        // beforeTokenStart = <<<<
+        var beforeTokenStart=txt.substring(0, tokenStartIndex);
+        // txt = ~~~~~\>>>>>>
+        txt=txt.substring(tokenStartIndex+tokenStartKey.length);
+
+        //if there is a token end, txt = ~~~~~\>>>>>>
+        var tokenEndIndex=txt.indexOf(tokenEndKey);
+        if(tokenEndIndex!==-1){
+          //afterTokenEnd = >>>>>>
+          var afterTokenEnd=txt.substring(tokenEndIndex+tokenEndKey.length);
+          // txt = ~~~~~
+          txt=txt.substring(0, tokenEndIndex);
+          ret={
+            before:beforeTokenStart,
+            between:txt,
+            after:afterTokenEnd,
+            start:tokenStartIndex,
+            end:tokenStartIndex+tokenEndKey,
+            startKey:tokenStartKey,
+            endKey:tokenEndKey
+          };
+        }
+      }
+      return ret;
+    },
+    //function used in the region code generators to select substring regions
+    replace:function(txt, startToken, token, endToken, regenCallback, firstCallback){
+      var self=this, ret=txt;
+      if(regenCallback!=undefined){
+        var tokenRegions=self['getBetweenTokens'](txt, startToken, token, endToken);
+        //if the token section is in the txt
+        if(tokenRegions.hasOwnProperty('between')){
+          //replace text between the start and end keys
+          var newBetween=regenCallback(tokenRegions['between']);
+          ret=tokenRegions['before']+tokenRegions['startKey'] + newBetween + tokenRegions['endKey']+tokenRegions['after'];
+        }else{ //token section not in the txt, or txt may be blank because this section of the template may never have been generated yet
+          if(firstCallback!=undefined){
+            //append the new code
+            var firstCode=firstCallback(txt);
+            txt+=tokenRegions['startKey'] + firstCode + tokenRegions['endKey'];
+            ret=txt;
+          }
+        }
+      }
+      return ret;
+    },
+
+
+
     initCodemirror:function(textarea, json){
       if(!textarea.hasOwnProperty('init-codemirror')){
         var cmJson=json['cm'];
@@ -165,7 +257,7 @@ var codeGen=(function(){
                 var newTxt=txt;
                 //update the region's content
                 var txtPath=regionArgs['update'](txt, {
-                  code_gen:self, key:dataKey, vals:vals,
+                  cg:self, key:dataKey, vals:vals,
                   region_args:regionArgs, frontend_wrap:regionEl
                 });
                 if(txtPath==undefined){ txtPath=''; }
