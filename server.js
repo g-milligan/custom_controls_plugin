@@ -68,9 +68,23 @@ var getExt=function(path){
   return ext;
 };
 
-var getReplacedRegion=function(fileBlob, insertTxt, tokenStart, tokenEnd, regionKey){
-  var tokenStartKey = tokenStart + regionKey + tokenEnd;
-  var tokenEndKey = tokenStart + '/' + regionKey + tokenEnd;
+var getRegionKeys=function(start, key, end){
+  return {
+    start:start + key + end,
+    end:start + '/' + key + end
+  }
+};
+
+var getRegionParts=function(fileBlob, tokenStart, regionKey, tokenEnd){
+  var retParts={};
+  var rkeys=getRegionKeys(tokenStart, regionKey, tokenEnd);
+  var tokenStartKey = rkeys['start'];
+  var tokenEndKey = rkeys['end'];
+  retParts['before']='';
+  retParts['start_key']=tokenStartKey;
+  retParts['between']='';
+  retParts['end_key']=tokenEndKey;
+  retParts['after']='';
   //<<<</~~~~~\>>>>
   /*
     <<<<    = before token start
@@ -83,6 +97,7 @@ var getReplacedRegion=function(fileBlob, insertTxt, tokenStart, tokenEnd, region
   if(tokenStartIndex!==-1){
     // beforeTokenStart = <<<<
     var beforeTokenStart=fileBlob.substring(0, tokenStartIndex);
+    retParts['before']=beforeTokenStart;
     // fileBlob = /~~~~~\>>>>>>
     fileBlob=fileBlob.substring(tokenStartIndex);
     // fileBlob = ~~~~~\>>>>>> or >>>>>>
@@ -94,16 +109,26 @@ var getReplacedRegion=function(fileBlob, insertTxt, tokenStart, tokenEnd, region
     if(tokenEndIndex!==-1){
       // prevBetweenTokens = ~~~~~
       prevBetweenTokens=fileBlob.substring(0, tokenEndIndex);
+      retParts['between']=prevBetweenTokens;
       // fileBlob = >>>>>>
       fileBlob=fileBlob.substring(tokenEndIndex + tokenEndKey.length);
     }
 
     // fileBlob = >>>>>>
+    retParts['after']=fileBlob;
+  } return retParts;
+};
 
-    //put it all together with the new insertTxt, replacing the ~~~~~ section
-    fileBlob = beforeTokenStart + tokenStartKey + insertTxt + tokenEndKey + fileBlob;
-  }
-  return fileBlob;
+var getRegion=function(fileBlob, tokenStart, tokenEnd, regionKey){
+  var rkeys=getRegionKeys(tokenStart, regionKey, tokenEnd);
+  var parts=getRegionParts(fileBlob, tokenStart, regionKey, tokenEnd);
+  return parts['between'];
+};
+
+var getReplacedRegion=function(fileBlob, insertTxt, tokenStart, tokenEnd, regionKey){
+  var rkeys=getRegionKeys(tokenStart, regionKey, tokenEnd);
+  var parts=getRegionParts(fileBlob, tokenStart, regionKey, tokenEnd);
+  return parts['before'] + parts['start_key'] + insertTxt + parts['end_key'] + parts['after'];
 };
 
 //create directories (if they don't already exist) and write the file
@@ -304,6 +329,62 @@ app.post('/write-template-regions', function(req, res){
             }
           }
         }
+      }
+    }
+    res.send(JSON.stringify(resJson));
+  }
+});
+
+//read code regions from files
+app.post('/read-template-regions', function(req, res){
+  var fromUrl=req.headers.referer;
+  //if the request came from this local site
+  if(isSameHost(fromUrl)){
+    var resJson={status:'error, no data provided'};
+    if(req.body.hasOwnProperty('data')){
+      var data=req.body.data; resJson['errors']=[]; resJson['regions']=[]; var hasReturnCode=false;
+      for(var fileKey in data){
+        if(data.hasOwnProperty(fileKey)){
+          if(data[fileKey].hasOwnProperty('read_path')){
+            var read_path=data[fileKey]['read_path'];
+            if(fs.existsSync(read_path) && fs.lstatSync(read_path).isFile()){
+              var fileBlob=fs.readFileSync(read_path, 'utf8');
+              if(data[fileKey].hasOwnProperty('region_count') && data[fileKey]['region_count']>0){
+                if(data[fileKey].hasOwnProperty('regions')){
+                  for(var regionKey in data[fileKey]['regions']){
+                    if(data[fileKey].hasOwnProperty('regions')){
+                      var regionJson=data[fileKey]['regions'][regionKey];
+                      if(regionJson.hasOwnProperty('token_start') && regionJson.hasOwnProperty('token_end')){
+                        var token_start=regionJson['token_start'], token_end=regionJson['token_end'];
+                        var regionCode=getRegion(fileBlob, token_start, token_end, regionKey);
+                        if(regionCode.length>0){
+                          hasReturnCode=true;
+                          resJson['regions'].push({
+                            file_key:fileKey, region_key:regionKey,
+                            code:regionCode
+                          });
+                        }
+                      }else{
+                        resJson['errors'].push('error, region, "'+regionKey+'" in file, "'+fileKey+'", must have both "token_start" and "token_end" values');
+                      }
+                    }
+                  }
+                }else{
+                  resJson['errors'].push('error, no "regions" for file, "' + fileKey + '"');
+                }
+              }else{
+                resJson['errors'].push('error, "region_count" = 0 for file, "' + fileKey + '"');
+              }
+            }else{
+              resJson['errors'].push('error, could not read region code, "'+regionCode+'"... "'+fileKey+'" file path not found or is not a file: '+read_path);
+            }
+          }else{
+            resJson['errors'].push('error, no "read_path" provided for file, "' + fileKey + '"');
+          }
+        }
+      }
+      if(hasReturnCode){
+        resJson['status']='ok';
       }
     }
     res.send(JSON.stringify(resJson));

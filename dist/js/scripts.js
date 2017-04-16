@@ -1196,6 +1196,19 @@ var codeGen=(function(){
                 }
               }
             }
+            var createFileLookupByKey=function(fJsonArray, callback){
+              var ret;
+              if(fJsonArray!=undefined && fJsonArray.length>0){
+                ret={};
+                for(var f=0;f<fJsonArray.length;f++){
+                  var fjson=fJsonArray[f]; var key=fjson['key'];
+                  ret[key]=fjson;
+                  if(callback!=undefined){
+                    callback(key, fjson, f);
+                  }
+                }
+              } return ret;
+            };
             //the main write update function that triggers all of the regions' update functions, based on modified vals
             //1) outputs the edited text to the frontend
             //2) writes edited text into the template file(s)
@@ -1203,19 +1216,12 @@ var codeGen=(function(){
               if(doWriteToFile==undefined){ doWriteToFile=true; }
               var output_files=args['get_write_files'](vals);
               //arrange output files so they can be looked up by their key
-              var output_files_lookup, input_files_lookup={}, unprocessedFileKeys=[];
-              if(output_files!=undefined){
-                output_files_lookup={};
-                for(var f=0;f<output_files.length;f++){
-                  var fjson=output_files[f]; var key=fjson['key'];
-                  output_files_lookup[key]=fjson;
-                }
-              }
+              var output_files_lookup=createFileLookupByKey(output_files);
               //arrange the input/template files so they can be looked up by their key
-              for(var t=0;t<args['template_files'].length;t++){
-                var tjson=args['template_files'][t]; var key=tjson['key'];
-                input_files_lookup[key]=tjson; unprocessedFileKeys.push(key);
-              }
+              var unprocessedFileKeys=[];
+              var input_files_lookup=createFileLookupByKey(args['template_files'], function(key, fjson, f){
+                unprocessedFileKeys.push(key);
+              });
               //for each region (get the text-code that needs to be written to file)
               var writeData={}, hasWriteData=false;
               var codeGenwrap=selEl.find('.code-gen-wrap:first');
@@ -1253,10 +1259,6 @@ var codeGen=(function(){
                     var writePath;
                     if(output_files_lookup!=undefined && output_files_lookup.hasOwnProperty(pathKey)){
                       writePath=output_files_lookup[pathKey]['path'];
-                    }else{
-                      if(txtPath.hasOwnProperty('path')){
-                        writePath=txtPath['path'];
-                      }
                     }
                     if(writePath!=undefined){
                       //get the original template path
@@ -1331,28 +1333,62 @@ var codeGen=(function(){
             ret['load']=function(vals){
               var output_files=args['get_write_files'](vals);
               var codeGenwrap=selEl.find('.code-gen-wrap:first');
+              //arrange output files so they can be looked up by their key
+              var output_files_lookup=createFileLookupByKey(output_files);
+              var readData={}, hasReadData=false;
+              //for each frontend region
               codeGenwrap.children('.region').each(function(){
                 var regionEl=jQuery(this);
                 var dataKey=regionEl.attr('data-key');
                 var regionArgs=regionEl[0]['region_args'];
-
-                //load the region code directly from the output_files
-
-
-
-
-
-
-
+                //for each template file writePath defined to hold this region as a substring
+                for(var f=0;f<regionArgs['template_files'].length;f++){
+                  var pathKey=regionArgs['template_files'][f];
+                  //set this as one of the code chunks to be written into file(s)
+                  var writePath;
+                  if(output_files_lookup!=undefined && output_files_lookup.hasOwnProperty(pathKey)){
+                    writePath=output_files_lookup[pathKey]['path'];
+                  }
+                  if(writePath!=undefined){
+                    if(!readData.hasOwnProperty(pathKey)){
+                      readData[pathKey]={};
+                      readData[pathKey]['region_count']=0;
+                      readData[pathKey]['read_path']=writePath;
+                      readData[pathKey]['regions']={};
+                    }
+                    readData[pathKey]['region_count']+=1;
+                    readData[pathKey]['regions'][regionArgs['key']]={
+                      token_start:regionArgs['token_start'],
+                      token_end:regionArgs['token_end']
+                    };
+                    hasReadData=true;
+                  }
+                }
               });
+              if(hasReadData){
+                ajaxPost('/read-template-regions', {data:readData},
+                function(ret){
+                  //read successful
+
+                  //for each region with return data
+                  for(var r=0;r<ret['regions'].length;r++){
+                    var regionData=ret['regions'][r];
+                    var regionKey=regionData['region_key'];
+                    var code=regionData['code'];
+                    //set the region code into the frontend region element
+                    var regionEl=selEl.find('.code-gen-wrap:first').find('.region[data-key="'+regionKey+'"]:first');
+                    if(regionEl.length>0){
+                      var regionArgs=regionEl[0]['region_args'];
+                      regionArgs['cm']['editor'].doc.setValue(code); //set the code that was loaded from file region
+                    }
+                  }
+                }, function(ret){
+                  //read error
 
 
 
-
-
-
-
-
+                });
+              }
             };
             self['update']=ret['update'];
             self['load']=ret['load'];
