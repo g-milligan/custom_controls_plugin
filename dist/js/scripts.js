@@ -23,7 +23,28 @@ function codeGen_fieldPointers(txt, args){
 }
 
 function codeGen_initJs(txt, args){
+  //GENERATE CODE
 
+  txt='';
+  txt+='//init canvas and gl, also handle window resize, etc...\n';
+  txt+='initGl();\n\n';
+
+  var noDepthTest='//', noObscureDistance='//';
+  if(args.vals['depth-test'].val){
+    noDepthTest=''
+  }
+  if(args.vals['obscure-distance'].val){
+    noObscureDistance=''
+  }
+
+  txt+='//set background color and depth\n';
+  txt+='gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque\n';
+  txt+='gl.clearDepth(1.0);                 // Clear everything\n';
+  txt+=noDepthTest+'gl.enable(gl.DEPTH_TEST);           // Enable depth testing\n';
+  txt+=noObscureDistance+'gl.depthFunc(gl.LEQUAL);            // Near things obscure far things\n\n';
+
+  //INSERT THE UPDATED CODE INTO txt
+  return {txt:txt};
 }
 
 function codeGen_initPrograms(txt, args){
@@ -91,6 +112,62 @@ function codeGen_vertexShaders(txt, args){
 
 function codeGen_fragmentShaders(txt, args){
 
+    //GENERATE CODE
+
+    //for each program
+    args.cg.children('program', args.vals, function(progJson, p){
+      var fragFieldsLookup={}, fragShaderFields='';
+      //for each fragment shader-field in this program (add to lookup)
+      args.cg.children('fragField', progJson, function(vfJson, v){
+        var cval=vfJson['category']['val'], dval=vfJson['dimension']['val'], nval=vfJson['name']['val'];
+        if(!fragFieldsLookup.hasOwnProperty(cval)){ fragFieldsLookup[cval]={}; }
+        if(!fragFieldsLookup[cval].hasOwnProperty(dval)){ fragFieldsLookup[cval][dval]=[]; }
+        //code line
+        fragFieldsLookup[cval][dval].push(cval+' '+dval+' '+nval+';');
+      });
+      //loop through the grouped fragment shader fields
+      args.cg.each(fragFieldsLookup, function(catKey, catJson, c){
+        args.cg.each(catJson, function(dimKey, dimJson, d){
+          dimJson.sort();
+          for(var n=0;n<dimJson.length;n++){
+            fragShaderFields+=dimJson[n]+'\n'; //add fragment field to code string
+          }
+        });
+      });
+
+      //INSERT THE FRAGMENT SHADER CODE INTO txt
+
+      //zero-in on the specific fragment shader for this program
+      txt=args.cg.replace(txt, '<!--','fragment-shader:'+progJson.name.val,'-->\n',function(fragShaderTxt){
+        //replace the fields section that's already in txt
+
+        //zero-in on the fragment shader fields
+        fragShaderTxt=args.cg.replace(fragShaderTxt, '/*','fields','*/\n',function(fieldsTxt){
+          return fragShaderFields; //set the generated fragment shader fields
+        });
+        return fragShaderTxt;
+
+      }, function(blankNewTxt){
+        //brand new code, not yet generated for the first time (append to txt)
+        var newCode='';
+        newCode+='<script id="fs-'+progJson.name.val+'" type="x-shader/x-fragment">/*<![CDATA[*/\n';
+        newCode+='\n';
+        newCode+='precision mediump float;\n';
+        newCode+='/*fields*/\n';
+        newCode+=fragShaderFields;
+        newCode+='/*/fields*/\n';
+        newCode+='\n';
+        newCode+='/*for program: '+progJson.name.val+'*/\n';
+        newCode+='void main() {\n';
+        newCode+='\t//gl_FragColor = \n';
+        newCode+='}\n';
+        newCode+='/*]]>*/</script>\n';
+
+        return newCode;
+      });
+
+    });
+    return {txt:txt};
 }
 
 //remove an array of project paths (and related data) from recent_projects.json
@@ -172,7 +249,75 @@ var customControls=(function(){
   };
 
   return{
-
+    getCtlHtml_checkbox:function(ck,args){
+      var html='', self=this;
+      html+='<input type="checkbox" class="val" id="'+ck+'" />';
+      return html;
+    },
+    setCtlEvents_checkbox:function(wrap){
+      var self=this;
+      var args=wrap[0]['custom_ctl_args'];
+      var input=wrap.find('.ctl .val:first');
+      //wire up events
+      input.change(function(e){
+        e.preventDefault(); e.stopPropagation();
+        args['on_set'](wrap, input);
+      });
+      //get value
+      wrap[0]['custom_ctl_args']['get_value']=function(w){
+        var inp=w.find('.ctl .val:first');
+        return inp.is(':checked');
+      };
+      //set value
+      wrap[0]['custom_ctl_args']['set_value']=function(w, v, triggerOnSet){
+        var inp=w.find('.ctl .val:first');
+        if(typeof v==='string'){
+          v=v.toLowerCase(); v=v.trim();
+          var firstChar=v.substring(0,1);
+          if(firstChar==='t'){
+            v=true;
+          }else if(firstChar==='f'){
+            v=false;
+          }else if(firstChar==='y'){
+            v=true;
+          }else if(firstChar==='n'){
+            v=false;
+          }else{
+            switch(v){
+              case '1': v=true; break;
+              case '0': v=false; break;
+            }
+          }
+        }else if(!isNaN(v)){
+          if(v<1){
+            v=false;
+          }else{
+            v=true;
+          }
+        }
+        inp.prop('checked',v);
+        if(triggerOnSet){ args['on_set'](w, inp); }
+        return inp.is(':checked');
+      };
+      //disable
+      wrap[0]['custom_ctl_args']['disable']=function(w){
+        var inp=w.find('.ctl .val:first');
+        inp.attr('disabled','disabled');
+      };
+      //enable
+      wrap[0]['custom_ctl_args']['enable']=function(w){
+        var inp=w.find('.ctl .val:first');
+        inp.attr('disabled','');
+        if(inp.removeAttr){
+          inp.removeAttr('disabled');
+        }
+      };
+      //focus
+      wrap[0]['custom_ctl_args']['focus']=function(w){
+        var inp=w.find('.ctl .val:first');
+        inp.focus();
+      };
+    },
     getCtlHtml_datalist:function(ck,args){
       var html='', self=this;
       html+='<input class="val" id="'+ck+'" list="'+ck+'-list" />';

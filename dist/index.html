@@ -36,6 +36,10 @@
           {
             key:'jquery',
             path:'codegen/template/webgl/js/jquery.min.js'
+          },
+          {
+            key:'webgl_helper',
+            path:'codegen/template/webgl/js/my_webgl_helpers.js'
           }
         ],
         get_write_files:function(vals){
@@ -51,6 +55,10 @@
             {
               key:'jquery',
               path:saveFolder+'js/jquery.min.js'
+            },
+            {
+              key:'webgl_helper',
+              path:saveFolder+'js/my_webgl_helpers.js'
             }
           ];
         },
@@ -189,12 +197,24 @@
 
       //INIT CUSTOM CONTROLS
 
+      var ctlsSelector='.shader-fields:first';
+
       var cc = customControls.init([
         {
-          selector:'.shader-fields:first', key:'page-title', label:'Page Title', save_in_folder:saveFolder
+          selector:ctlsSelector, key:'page-title', label:'Page Title', save_in_folder:saveFolder
         },
+        {selector:ctlsSelector, key:'depth-test', label:'depth testing?', type:'checkbox'},
+        {selector:ctlsSelector, key:'obscure-distance', label:'Obscure distance?', type:'checkbox'},
+        /*{
+          selector:ctlsSelector, key:'toggle-options1', label:'Toggle Options 1',
+          min_child_groups:1, max_child_groups:1,
+          children:[
+            {key:'depth-test', label:'depth testing?', type:'checkbox'},
+            {key:'obscure-distance', label:'Obscure distance?', type:'checkbox'}
+          ]
+        },*/
         {
-            selector:'.shader-fields:first', key:'program', label:'Program',
+            selector:ctlsSelector, key:'program', label:'Program',
             min_child_groups:1, max_child_groups:-1, columns:1,
             children:[
               {

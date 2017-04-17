@@ -31,7 +31,75 @@ var customControls=(function(){
   };
 
   return{
-
+    getCtlHtml_checkbox:function(ck,args){
+      var html='', self=this;
+      html+='<input type="checkbox" class="val" id="'+ck+'" />';
+      return html;
+    },
+    setCtlEvents_checkbox:function(wrap){
+      var self=this;
+      var args=wrap[0]['custom_ctl_args'];
+      var input=wrap.find('.ctl .val:first');
+      //wire up events
+      input.change(function(e){
+        e.preventDefault(); e.stopPropagation();
+        args['on_set'](wrap, input);
+      });
+      //get value
+      wrap[0]['custom_ctl_args']['get_value']=function(w){
+        var inp=w.find('.ctl .val:first');
+        return inp.is(':checked');
+      };
+      //set value
+      wrap[0]['custom_ctl_args']['set_value']=function(w, v, triggerOnSet){
+        var inp=w.find('.ctl .val:first');
+        if(typeof v==='string'){
+          v=v.toLowerCase(); v=v.trim();
+          var firstChar=v.substring(0,1);
+          if(firstChar==='t'){
+            v=true;
+          }else if(firstChar==='f'){
+            v=false;
+          }else if(firstChar==='y'){
+            v=true;
+          }else if(firstChar==='n'){
+            v=false;
+          }else{
+            switch(v){
+              case '1': v=true; break;
+              case '0': v=false; break;
+            }
+          }
+        }else if(!isNaN(v)){
+          if(v<1){
+            v=false;
+          }else{
+            v=true;
+          }
+        }
+        inp.prop('checked',v);
+        if(triggerOnSet){ args['on_set'](w, inp); }
+        return inp.is(':checked');
+      };
+      //disable
+      wrap[0]['custom_ctl_args']['disable']=function(w){
+        var inp=w.find('.ctl .val:first');
+        inp.attr('disabled','disabled');
+      };
+      //enable
+      wrap[0]['custom_ctl_args']['enable']=function(w){
+        var inp=w.find('.ctl .val:first');
+        inp.attr('disabled','');
+        if(inp.removeAttr){
+          inp.removeAttr('disabled');
+        }
+      };
+      //focus
+      wrap[0]['custom_ctl_args']['focus']=function(w){
+        var inp=w.find('.ctl .val:first');
+        inp.focus();
+      };
+    },
     getCtlHtml_datalist:function(ck,args){
       var html='', self=this;
       html+='<input class="val" id="'+ck+'" list="'+ck+'-list" />';
