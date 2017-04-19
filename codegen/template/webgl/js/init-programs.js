@@ -6,9 +6,10 @@ function codeGen_initPrograms(txt, args){
   //for each program
   args.cg.children('program', args.vals, function(progJson, p){
     var pn=progJson.name.val;
+    var progName=var_prog(pn);
 
-    progsCode+="var prog_"+pn+"=getProgram('#vs-"+pn+":first', '#fs-"+pn+":first');\n";
-    progsCode+="gl.useProgram(prog_"+pn+"['program']);\n\n";
+    progsCode+="var "+progName+"=getProgram('#vs-"+pn+":first', '#fs-"+pn+":first');\n";
+    progsCode+="gl.useProgram("+progName+"['program']);\n\n";
   });
 
   //INSERT THE PROGRAMS' CODE INTO txt

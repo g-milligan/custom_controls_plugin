@@ -25,11 +25,11 @@ var jsFiles={
     './js/vendor/jquery.min.js'
   ],
   './dist/js/scripts.js':[
+    './codegen/template/webgl/js/snippets.js',
     './codegen/template/webgl/js/page-title.js',
     './codegen/template/webgl/js/buffers.js',
     './codegen/template/webgl/js/canvas.js',
     './codegen/template/webgl/js/draw.js',
-    './codegen/template/webgl/js/enable-attributes.js',
     './codegen/template/webgl/js/field-pointers.js',
     './codegen/template/webgl/js/init-js.js',
     './codegen/template/webgl/js/init-programs.js',
