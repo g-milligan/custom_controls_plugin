@@ -136,7 +136,8 @@ var codeGen=(function(){
       return ret;
     },
     //function used in the region code generators to select substring regions
-    replace:function(txt, startToken, token, endToken, regenCallback, firstCallback){
+    replace:function(txt, startToken, token, endToken, regenCallback, firstCallback, setTokensForFirstCallback){
+      if(setTokensForFirstCallback==undefined){ setTokensForFirstCallback=true; }
       var self=this, ret=txt;
       if(regenCallback!=undefined){
         var tokenRegions=self['getBetweenTokens'](txt, startToken, token, endToken);
@@ -149,7 +150,11 @@ var codeGen=(function(){
           if(firstCallback!=undefined){
             //append the new code
             var firstCode=firstCallback(txt);
-            txt+=tokenRegions['startKey'] + firstCode + tokenRegions['endKey'];
+            if(setTokensForFirstCallback){
+              txt+=tokenRegions['startKey'] + firstCode + tokenRegions['endKey'];
+            }else{
+              txt+=firstCode;
+            }
             ret=txt;
           }
         }
