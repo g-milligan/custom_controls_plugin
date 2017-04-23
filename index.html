@@ -146,6 +146,9 @@
           if(ccw.length>0){
             var vals=ccw[0]['custom_ctl_args']['get_values'](ccw);
             self['update'](vals);
+            if(vals['page-title']['val'].length>0){
+              rw.reload('main', vals);
+            }
           }
         }
       });
@@ -210,14 +213,6 @@
         },
         {selector:ctlsSelector, key:'depth-test', label:'depth testing?', type:'checkbox'},
         {selector:ctlsSelector, key:'obscure-distance', label:'Obscure distance?', type:'checkbox'},
-        /*{
-          selector:ctlsSelector, key:'toggle-options1', label:'Toggle Options 1',
-          min_child_groups:1, max_child_groups:1,
-          children:[
-            {key:'depth-test', label:'depth testing?', type:'checkbox'},
-            {key:'obscure-distance', label:'Obscure distance?', type:'checkbox'}
-          ]
-        },*/
         {
             selector:ctlsSelector, key:'program', label:'Program',
             min_child_groups:1, max_child_groups:-1, columns:1,
@@ -252,6 +247,9 @@
         //event fired for with the _file.json for the field values is loaded
         on_load:function(path, file, vals){
           cg.load(vals); //load the cg data into the text regions
+          if(vals['page-title']['val'].length>0){
+            rw.open('main', vals);
+          }
         },
         submit:{
           label:'Process',
@@ -259,6 +257,7 @@
           on_submit:function(vals){
             if(vals['page-title']['val'].length>0){
               cg.update(vals); //write data to file(s)
+              rw.reload('main', vals);
             }
           }
         }
