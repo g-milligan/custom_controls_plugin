@@ -109,16 +109,21 @@ function codeGen_draw(txt, args){
       newCode+=code;
       newCode+='/*/'+startSendToTxt+'*/\n\n';
 
-      newCode+='//execute glsl vertex shader for each vertex... '+coordQtyVar+' number of times\n';
+      newCode+='//execute glsl vertex shader for each vertex... coordQty number of times\n';
       newCode+='//if drawing TRIANGLES, then every 3 coords will be used to make one triangle\n';
       newCode+='//while vertex shader is executed for each vertex, the fragment shader executes for each pixel\n';
-      newCode+='gl.drawArrays(gl.TRIANGLES, 0, '+coordQtyVar+');\n\n';
+      newCode+='/*do-draw*/ gl.drawArrays(gl.TRIANGLES, 0, '+coordQtyVar+'); /*/do-draw*/\n\n';
       newCode+='};\n\n';
       newCode+='//keep calling the draw function at a regular interval\n';
       newCode+='setInterval(draw, 15);\n\n';
 
       return newCode;
     },false);
+
+    //zero-in on the do-draw section
+    txt=args.cg.replace(txt, '/*','do-draw','*/',function(doDrawTxt){
+      return ' gl.drawArrays(gl.TRIANGLES, 0, '+coordQtyVar+'); ';
+    });
 
   });
 

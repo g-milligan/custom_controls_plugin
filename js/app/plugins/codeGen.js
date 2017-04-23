@@ -127,7 +127,7 @@ var codeGen=(function(){
             between:txt,
             after:afterTokenEnd,
             start:tokenStartIndex,
-            end:tokenStartIndex+tokenEndKey,
+            end:tokenStartIndex+tokenEndIndex,
             startKey:tokenStartKey,
             endKey:tokenEndKey
           };

@@ -20,7 +20,9 @@
 
       //INIT CODE GEN
 
-      var saveFolder='codegen/builds/webgl/';
+      var urlRoot='dist/';
+      var urlPath='codegen/webgl/';
+      var saveFolder=urlRoot+urlPath;
 
       var cg = codeGen.init({
         selector:'.code-regions:first',
