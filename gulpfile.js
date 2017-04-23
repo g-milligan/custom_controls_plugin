@@ -37,7 +37,8 @@ var jsFiles={
     './codegen/template/webgl/js/fragment-shaders.js',
     './js/app/get_post.js',
     './js/app/plugins/customControls.js',
-    './js/app/plugins/codeGen.js'
+    './js/app/plugins/codeGen.js',
+    './js/app/plugins/reloadWindow.js'
   ]
 };
 

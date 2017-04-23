@@ -24,6 +24,17 @@
       var urlPath='codegen/webgl/';
       var saveFolder=urlRoot+urlPath;
 
+      var rw = reloadWindow.init({
+        get_url_paths:function(vals){
+          return [
+            {
+              key:'main',
+              path:urlPath+vals['page-title']['val']+'.html'
+            }
+          ]
+        }
+      });
+
       var cg = codeGen.init({
         selector:'.code-regions:first',
         template_files:[
