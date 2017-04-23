@@ -42,37 +42,63 @@ var reloadWindow=(function(){
         } return ret;
       };
 
-
-      ret['reload']=function(urlKey, vals){
+      ret['open']=function(urlKey, vals){
         var res={status:'error, could not get data for key, "'+urlKey+'"'};
-        var urlPaths=self['get_url_paths'](vals);
+        var urlPaths=args['get_url_paths'](vals);
         var urls_lookup=createPathLookupByKey(urlPaths);
         if(urls_lookup.hasOwnProperty(urlKey)){
-
-
-
-
-
-
-
-
+          var windowJson=urls_lookup[urlKey];
+          if(windowJson.hasOwnProperty('path')){
+            if(!document.hasOwnProperty('reload_window_args')){
+              document['reload_window_args']={};
+            }
+            if(!document['reload_window_args'].hasOwnProperty('by_key')){
+              document['reload_window_args']['by_key']={};
+            }
+            if(!document['reload_window_args']['by_key'].hasOwnProperty(urlKey)){
+              document['reload_window_args']['by_key'][urlKey]={};
+            }
+            var width=window.innerWidth, height=window.innerHeight;
+            var winAttrStr='width='+width+',height='+height;
+            var w=window.open(windowJson['path'],urlKey,winAttrStr);
+            document['reload_window_args']['by_key'][urlKey]['win']=w;
+          }else{
+            res['status']='error, "path" not provided for url, "'+urlKey+'"';
+          }
         }
         return res;
       };
 
-      ret['open']=function(urlKey, vals){
+      ret['reload']=function(urlKey, vals){
         var res={status:'error, could not get data for key, "'+urlKey+'"'};
-        var urlPaths=self['get_url_paths'](vals);
+        var urlPaths=args['get_url_paths'](vals);
         var urls_lookup=createPathLookupByKey(urlPaths);
         if(urls_lookup.hasOwnProperty(urlKey)){
-
-
-
-
-
-
-
-
+          var windowJson=urls_lookup[urlKey];
+          if(windowJson.hasOwnProperty('path')){
+            if(!document.hasOwnProperty('reload_window_args')){
+              document['reload_window_args']={};
+            }
+            if(!document['reload_window_args'].hasOwnProperty('by_key')){
+              document['reload_window_args']['by_key']={};
+            }
+            if(!document['reload_window_args']['by_key'].hasOwnProperty(urlKey)){
+              document['reload_window_args']['by_key'][urlKey]={};
+            }
+            var openRes=ret['open'](urlKey, vals);
+            if(document['reload_window_args']['by_key'][urlKey].hasOwnProperty('win')){
+              var w=document['reload_window_args']['by_key'][urlKey]['win'];
+              if(w!=undefined){
+                w.document.location.reload();
+              }else{
+                res['status']='error, cannot reload undefined window object';
+              }
+            }else{
+              res['status']=openRes['status'];
+            }
+          }else{
+            res['status']='error, "path" not provided for url, "'+urlKey+'"';
+          }
         }
         return res;
       };

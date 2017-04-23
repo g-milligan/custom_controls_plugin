@@ -1,3 +1,3 @@
 function codeGen_pageTitle(txt, args){
-  return {txt:args['vals']['page-title']['val'] + ' - webgl'};
+  return {txt:'<title>'+args['vals']['page-title']['val'] + ' - webgl'+'</title>'};
 }
