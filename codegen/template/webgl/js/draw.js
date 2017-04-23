@@ -24,15 +24,17 @@ function codeGen_draw(txt, args){
       fragFieldsLookup[cval][dval].push(nval);
     });
 
-
+    var coordQtyVar='coordQty';
 
     var getSendToShaderLine=function(shaderType, cat, dim, name){
       var ret='', progName=var_prog(progJson.name.val);
       var locVar=var_loc(shaderType, progJson.name.val, cat, dim, name);
+      var coordSizeVar=var_coordSize(name);
       switch(cat){
         case 'attribute':
+          coordQtyVar=var_coordQty(name);
           ret+='//send data from the buffer to the attribute\n';
-          ret+='gl.vertexAttribPointer('+locVar+', coordSize, gl.FLOAT, false, 0, 0);\n';
+          ret+='gl.vertexAttribPointer('+locVar+', '+coordSizeVar+', gl.FLOAT, false, 0, 0);\n';
         break; case 'uniform':
           ret+='//send data from javascript to the uniform\n';
           switch(dim){
@@ -107,10 +109,10 @@ function codeGen_draw(txt, args){
       newCode+=code;
       newCode+='/*/'+startSendToTxt+'*/\n\n';
 
-      newCode+='//execute glsl vertex shader for each vertex... coordQty number of times\n';
+      newCode+='//execute glsl vertex shader for each vertex... '+coordQtyVar+' number of times\n';
       newCode+='//if drawing TRIANGLES, then every 3 coords will be used to make one triangle\n';
       newCode+='//while vertex shader is executed for each vertex, the fragment shader executes for each pixel\n';
-      newCode+='gl.drawArrays(gl.TRIANGLES, 0, coordQty);\n\n';
+      newCode+='gl.drawArrays(gl.TRIANGLES, 0, '+coordQtyVar+');\n\n';
       newCode+='};\n\n';
       newCode+='//keep calling the draw function at a regular interval\n';
       newCode+='setInterval(draw, 15);\n\n';

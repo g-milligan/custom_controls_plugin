@@ -16,3 +16,11 @@ function var_vertices(progName, category, dimension, fieldName){
   var c=category.substring(0,1);
   return 'vertices_'+progName+'_'+c+'_'+dimension+'_'+fieldName;
 }
+
+function var_coordSize(fieldName){
+  return 'coordSize_'+fieldName;
+}
+
+function var_coordQty(fieldName){
+  return 'coordQty_'+fieldName;
+}

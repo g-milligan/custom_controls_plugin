@@ -29,10 +29,13 @@ function codeGen_buffers(txt, args){
         break;
     }
 
+    var coordSizeVar=var_coordSize(bufferJson.name.val);
+    var coordQtyVar=var_coordQty(bufferJson.name.val);
+
     ret+='//create vertex coordinates\n';
-    ret+='var coordSize='+coordSize+', '+verticesVar+'=[ /*vertices*/ \n\n//...\n\n';
+    ret+='var '+coordSizeVar+'='+coordSize+', '+verticesVar+'=[ /*vertices*/ \n\n//...\n\n';
     ret+='/*/vertices*/ ];\n\n';
-    ret+='var coordQty='+verticesVar+'.length/coordSize;\n\n';
+    ret+='var '+coordQtyVar+'='+verticesVar+'.length/'+coordSizeVar+';\n\n';
     ret+='//set the vertices on the bound buffer\n';
     ret+='gl.bufferData(gl.ARRAY_BUFFER,new Float32Array('+verticesVar+'),gl.STATIC_DRAW);\n\n';
 

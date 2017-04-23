@@ -17,6 +17,14 @@ function var_vertices(progName, category, dimension, fieldName){
   return 'vertices_'+progName+'_'+c+'_'+dimension+'_'+fieldName;
 }
 
+function var_coordSize(fieldName){
+  return 'coordSize_'+fieldName;
+}
+
+function var_coordQty(fieldName){
+  return 'coordQty_'+fieldName;
+}
+
 function codeGen_pageTitle(txt, args){
   return {txt:args['vals']['page-title']['val'] + ' - webgl'};
 }
@@ -52,10 +60,13 @@ function codeGen_buffers(txt, args){
         break;
     }
 
+    var coordSizeVar=var_coordSize(bufferJson.name.val);
+    var coordQtyVar=var_coordQty(bufferJson.name.val);
+
     ret+='//create vertex coordinates\n';
-    ret+='var coordSize='+coordSize+', '+verticesVar+'=[ /*vertices*/ \n\n//...\n\n';
+    ret+='var '+coordSizeVar+'='+coordSize+', '+verticesVar+'=[ /*vertices*/ \n\n//...\n\n';
     ret+='/*/vertices*/ ];\n\n';
-    ret+='var coordQty='+verticesVar+'.length/coordSize;\n\n';
+    ret+='var '+coordQtyVar+'='+verticesVar+'.length/'+coordSizeVar+';\n\n';
     ret+='//set the vertices on the bound buffer\n';
     ret+='gl.bufferData(gl.ARRAY_BUFFER,new Float32Array('+verticesVar+'),gl.STATIC_DRAW);\n\n';
 
@@ -149,15 +160,17 @@ function codeGen_draw(txt, args){
       fragFieldsLookup[cval][dval].push(nval);
     });
 
-
+    var coordQtyVar='coordQty';
 
     var getSendToShaderLine=function(shaderType, cat, dim, name){
       var ret='', progName=var_prog(progJson.name.val);
       var locVar=var_loc(shaderType, progJson.name.val, cat, dim, name);
+      var coordSizeVar=var_coordSize(name);
       switch(cat){
         case 'attribute':
+          coordQtyVar=var_coordQty(name);
           ret+='//send data from the buffer to the attribute\n';
-          ret+='gl.vertexAttribPointer('+locVar+', coordSize, gl.FLOAT, false, 0, 0);\n';
+          ret+='gl.vertexAttribPointer('+locVar+', '+coordSizeVar+', gl.FLOAT, false, 0, 0);\n';
         break; case 'uniform':
           ret+='//send data from javascript to the uniform\n';
           switch(dim){
@@ -224,7 +237,6 @@ function codeGen_draw(txt, args){
       //brand new code, not yet generated for the first time (append to txt)
       var newCode='';
       newCode+='var draw=function(){\n';
-      newCode+='//clear the canvas for next fresh draw\n';
       newCode+='/*draw-clear*/\n';
       newCode+='gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);\n';
       newCode+='/*/draw-clear*/\n\n';
@@ -233,10 +245,10 @@ function codeGen_draw(txt, args){
       newCode+=code;
       newCode+='/*/'+startSendToTxt+'*/\n\n';
 
-      newCode+='//execute glsl vertex shader for each vertex... coordQty number of times\n';
+      newCode+='//execute glsl vertex shader for each vertex... '+coordQtyVar+' number of times\n';
       newCode+='//if drawing TRIANGLES, then every 3 coords will be used to make one triangle\n';
       newCode+='//while vertex shader is executed for each vertex, the fragment shader executes for each pixel\n';
-      newCode+='gl.drawArrays(gl.TRIANGLES, 0, coordQty);\n\n';
+      newCode+='gl.drawArrays(gl.TRIANGLES, 0, '+coordQtyVar+');\n\n';
       newCode+='};\n\n';
       newCode+='//keep calling the draw function at a regular interval\n';
       newCode+='setInterval(draw, 15);\n\n';
