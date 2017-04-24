@@ -147,7 +147,9 @@
             var vals=ccw[0]['custom_ctl_args']['get_values'](ccw);
             self['update'](vals);
             if(vals['page-title']['val'].length>0){
-              rw.reload('main', vals);
+              if(vals['browser-reload']['val']){
+                rw.reload('main', vals);
+              }
             }
           }
         }
@@ -211,6 +213,7 @@
         {
           selector:ctlsSelector, key:'page-title', label:'Page Title', save_in_folder:saveFolder
         },
+        {selector:ctlsSelector, key:'browser-reload', label:'Live reload?', type:'checkbox'},
         {selector:ctlsSelector, key:'depth-test', label:'depth testing?', type:'checkbox'},
         {selector:ctlsSelector, key:'obscure-distance', label:'Obscure distance?', type:'checkbox'},
         {
@@ -248,7 +251,9 @@
         on_load:function(path, file, vals){
           cg.load(vals); //load the cg data into the text regions
           if(vals['page-title']['val'].length>0){
-            rw.open('main', vals);
+            if(vals['browser-reload']['val']){
+              rw.open('main', vals);
+            }
           }
         },
         submit:{
@@ -257,7 +262,9 @@
           on_submit:function(vals){
             if(vals['page-title']['val'].length>0){
               cg.update(vals); //write data to file(s)
-              rw.reload('main', vals);
+              if(vals['browser-reload']['val']){
+                rw.reload('main', vals);
+              }
             }
           }
         }
