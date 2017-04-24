@@ -17,6 +17,10 @@ function var_vertices(progName, category, dimension, fieldName){
   return 'vertices_'+progName+'_'+c+'_'+dimension+'_'+fieldName;
 }
 
+function var_sendVal(dimension, fieldName){
+  return dimension+'_'+fieldName;
+}
+
 function var_coordSize(fieldName){
   return 'coordSize_'+fieldName;
 }

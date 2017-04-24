@@ -36,34 +36,22 @@ function codeGen_draw(txt, args){
           ret+='//send data from the buffer to the attribute\n';
           ret+='gl.vertexAttribPointer('+locVar+', '+coordSizeVar+', gl.FLOAT, false, 0, 0);\n';
         break; case 'uniform':
+          var sendValVar=var_sendVal(dim, name);
           ret+='//send data from javascript to the uniform\n';
           switch(dim){
-            case 'float': ret+='gl.uniform1f('+locVar+', v); //for float\n'; break;
-            case 'float[]': ret+='gl.uniform1fv('+locVar+', [v]); //for float or float array\n'; break;
-            case 'vec2': ret+='gl.uniform2f('+locVar+', v0, v1); //for vec2\n'; break;
-            case 'vec2[]': ret+='gl.uniform2fv('+locVar+', [v0, v1]); //for vec2 or vec2 array\n'; break;
-            case 'vec3': ret+='gl.uniform3f('+locVar+', v0, v1, v2); //for vec3\n'; break;
-            case 'vec3[]': ret+='gl.uniform3fv('+locVar+', [v0, v1, v2]); //for vec3 or vec3 array\n'; break;
-            case 'vec4': ret+='gl.uniform4f('+locVar+', v0, v1, v2, v4); //for vec4\n'; break;
-            case 'vec4[]': ret+='gl.uniform4fv('+locVar+', [v0, v1, v2, v4]); //for vec4 or vec4 array\n'; break;
-            case 'mat2': ret+='gl.uniformMatrix2fv('+locVar+', false, [  4x element array ]) //for mat2 or mat2 array\n'; break;
-            case 'mat2[]': ret+='gl.uniformMatrix2fv('+locVar+', false, [  4x element array ]) //for mat2 or mat2 array\n'; break;
-            case 'mat3': ret+='gl.uniformMatrix3fv('+locVar+', false, [  9x element array ]) //for mat3 or mat3 array\n'; break;
-            case 'mat3[]': ret+='gl.uniformMatrix3fv('+locVar+', false, [  9x element array ]) //for mat3 or mat3 array\n'; break;
-            case 'mat4': ret+='gl.uniformMatrix4fv('+locVar+', false, [ 16x element array ]) //for mat4 or mat4 array\n'; break;
-            case 'mat4[]': ret+='gl.uniformMatrix4fv('+locVar+', false, [ 16x element array ]) //for mat4 or mat4 array\n'; break;
-            case 'int': ret+='gl.uniform1i('+locVar+', v); //for int\n'; break;
-            case 'int[]': ret+='gl.uniform1iv('+locVar+', [v]); //for int or int array\n'; break;
-            case 'ivec2': ret+='gl.uniform2i('+locVar+', v0, v1); //for ivec2\n'; break;
-            case 'ivec2[]': ret+='gl.uniform2iv('+locVar+', [v0, v1]); //for ivec2 or ivec2 array\n'; break;
-            case 'ivec3': ret+='gl.uniform3i('+locVar+', v0, v1, v2); //for ivec3\n'; break;
-            case 'ivec3[]': ret+='gl.uniform3iv('+locVar+', [v0, v1, v2]); //for ivec3 or ivec3 array\n'; break;
-            case 'ivec4': ret+='gl.uniform4i('+locVar+', v0, v1, v2, v4); //for ivec4\n'; break;
-            case 'ivec4[]': ret+='gl.uniform4iv('+locVar+', [v0, v1, v2, v4]); //for ivec4 or ivec4 array\n'; break;
-            case 'sampler2D': ret+='gl.uniform1i('+locVar+', v); //for sampler2D (textures)\n'; break;
-            case 'sampler2D[]': ret+='gl.uniform1iv('+locVar+', [v]); //for sampler2D or sampler2D array\n'; break;
-            case 'samplerCube': ret+='gl.uniform1i('+locVar+', v); //for samplerCube (textures)\n'; break;
-            case 'samplerCube[]': ret+='gl.uniform1iv('+locVar+', [v]); //for samplerCube or samplerCube array\n'; break;
+            case 'float': ret+='gl.uniform1fv('+locVar+', '+sendValVar+'); // [v] for float or float array\n'; break;
+            case 'vec2': ret+='gl.uniform2fv('+locVar+', '+sendValVar+'); // [v0, v1] for vec2 or vec2 array\n'; break;
+            case 'vec3': ret+='gl.uniform3fv('+locVar+', '+sendValVar+'); // [v0, v1, v2] for vec3 or vec3 array\n'; break;
+            case 'vec4': ret+='gl.uniform4fv('+locVar+', '+sendValVar+'); // [v0, v1, v2, v4] for vec4 or vec4 array\n'; break;
+            case 'mat2': ret+='gl.uniformMatrix2fv('+locVar+', false, '+sendValVar+') // [  4x element array ] for mat2 or mat2 array\n'; break;
+            case 'mat3': ret+='gl.uniformMatrix3fv('+locVar+', false, '+sendValVar+') // [  9x element array ] for mat3 or mat3 array\n'; break;
+            case 'mat4': ret+='gl.uniformMatrix4fv('+locVar+', false, '+sendValVar+') // [ 16x element array ] for mat4 or mat4 array\n'; break;
+            case 'int': ret+='gl.uniform1iv('+locVar+', '+sendValVar+'); // [v] for int or int array\n'; break;
+            case 'ivec2': ret+='gl.uniform2iv('+locVar+', '+sendValVar+'); // [v0, v1] for ivec2 or ivec2 array\n'; break;
+            case 'ivec3': ret+='gl.uniform3iv('+locVar+', '+sendValVar+'); // [v0, v1, v2] for ivec3 or ivec3 array\n'; break;
+            case 'ivec4': ret+='gl.uniform4iv('+locVar+', '+sendValVar+'); // [v0, v1, v2, v4] for ivec4 or ivec4 array\n'; break;
+            case 'sampler2D': ret+='gl.uniform1iv('+locVar+', '+sendValVar+'); // [v] for sampler2D or sampler2D array\n'; break;
+            case 'samplerCube': ret+='gl.uniform1iv('+locVar+', '+sendValVar+'); // [v] for samplerCube or samplerCube array\n'; break;
           }
         break; case 'varying':
 
